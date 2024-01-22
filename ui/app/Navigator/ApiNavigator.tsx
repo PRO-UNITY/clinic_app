@@ -29,15 +29,6 @@ const AppNavigator = () => {
           headerShown: false,
         }}
       />
-
-      <Stack.Screen
-        name='User'
-        component={UserProfile}
-        options={{
-          headerShown: false,
-        }}
-      />
-
       <Stack.Screen name='Verification' component={Verification} />
       <Stack.Screen
         name='Register'

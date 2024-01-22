@@ -14,6 +14,7 @@ const Login = ({ navigation }: any) => {
 
   const handleLogin = () => {
     console.log('Login');
+    navigation.navigate('TabBar');
   };
 
   const navigateToRegister = () => {
