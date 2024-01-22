@@ -9,12 +9,13 @@ import {
 
 interface VerificationProps {}
 
-const Verification: React.FC<VerificationProps> = () => {
+const Verification: React.FC<VerificationProps> = ({ navigation }: any) => {
   const [verificationCode, setVerificationCode] = useState(['', '', '', '']);
   const inputRefs = useRef<TextInput[]>([]);
 
   const handleVerification = () => {
     const code = verificationCode.join('');
+    navigation.navigate('TabBar');
   };
 
   const handleChangeText = (text: string, index: number) => {

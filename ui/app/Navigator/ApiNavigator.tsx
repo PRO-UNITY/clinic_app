@@ -6,6 +6,9 @@ import Login from '../screens/login/Login';
 import Welcome from '../screens/welcome/Welcome';
 import Verification from '../screens/verification/Verification';
 import ForgotPassword from '../screens/forgot-password/ForgotPassword';
+import Home from '../screens/home/Home';
+import UserProfile from '../screens/user-profile/UserProfile';
+import TabBar from '../components/tabbar/Tabbar';
 
 const Stack = createStackNavigator();
 
@@ -19,6 +22,22 @@ const AppNavigator = () => {
           headerShown: false,
         }}
       />
+      <Stack.Screen
+        name='TabBar'
+        component={TabBar}
+        options={{
+          headerShown: false,
+        }}
+      />
+
+      <Stack.Screen
+        name='User'
+        component={UserProfile}
+        options={{
+          headerShown: false,
+        }}
+      />
+
       <Stack.Screen name='Verification' component={Verification} />
       <Stack.Screen
         name='Register'
