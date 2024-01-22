@@ -8,14 +8,11 @@ import {
 import React from 'react';
 
 const Register = ({ navigation }: any) => {
-  const [firstName, setFirstName] = React.useState('');
-  const [lastName, setLastName] = React.useState('');
-  const [email, setEmail] = React.useState('');
   const [phone, setPhone] = React.useState('');
   const [password, setPassword] = React.useState('');
+  const [confirmPassword, setConfirmPassword] = React.useState('');
 
   const handleRegister = () => {
-    // console.log('Register');
     navigation.navigate('Verification');
   };
 
@@ -29,29 +26,7 @@ const Register = ({ navigation }: any) => {
         <Text style={styles.heading}>Welcome to Clinic</Text>
         <Text style={styles.subheading}>Let us get to know you better!</Text>
       </View>
-
       <View style={styles.registerContainer}>
-        <TextInput
-          style={styles.input}
-          value={firstName}
-          onChangeText={setFirstName}
-          placeholder='First name'
-          keyboardType='default'
-        />
-        <TextInput
-          style={styles.input}
-          value={lastName}
-          onChangeText={setLastName}
-          placeholder='Last Name'
-          keyboardType='default'
-        />
-        <TextInput
-          style={styles.input}
-          value={email}
-          onChangeText={setEmail}
-          placeholder='Email'
-          keyboardType='email-address'
-        />
         <TextInput
           style={styles.input}
           value={phone}
@@ -63,6 +38,14 @@ const Register = ({ navigation }: any) => {
           style={styles.input}
           value={password}
           onChangeText={setPassword}
+          secureTextEntry={true}
+          placeholder='Password'
+          keyboardType='default'
+        />
+        <TextInput
+          style={styles.input}
+          value={confirmPassword}
+          onChangeText={setConfirmPassword}
           secureTextEntry={true}
           placeholder='Password'
           keyboardType='default'
@@ -79,9 +62,9 @@ const Register = ({ navigation }: any) => {
         <View>
           <Text
             style={{
-              textAlign: 'left',
+              textAlign: 'center',
               marginTop: 20,
-              color: '#404446',
+              color: '#054A80',
               fontSize: 16,
             }}
           >
