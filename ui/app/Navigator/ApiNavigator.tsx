@@ -9,6 +9,8 @@ import ForgotPassword from '../screens/forgot-password/ForgotPassword';
 import Home from '../screens/home/Home';
 import UserProfile from '../screens/user-profile/UserProfile';
 import TabBar from '../components/tabbar/Tabbar';
+import Appointment from '../screens/appointment/Appointment';
+import AppointDoctor from '../screens/appointment/AppointDoctor';
 
 const Stack = createStackNavigator();
 
@@ -29,6 +31,8 @@ const AppNavigator = () => {
           headerShown: false,
         }}
       />
+      <Stack.Screen name='Appointment' component={Appointment} />
+      <Stack.Screen name='AppointDoctor' component={AppointDoctor} />
       <Stack.Screen name='Verification' component={Verification} />
       <Stack.Screen
         name='Register'

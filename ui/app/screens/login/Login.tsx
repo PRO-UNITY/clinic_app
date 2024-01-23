@@ -4,9 +4,13 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
+  Alert,
   View,
 } from 'react-native';
 import React from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { loginUser } from '../../services/auth/Auth';
+import { clearInputs } from '../../utils/clearInputs';
 
 const Login = ({ navigation }: any) => {
   const [phone, setPhone] = useState('');
@@ -14,7 +18,19 @@ const Login = ({ navigation }: any) => {
 
   const handleLogin = () => {
     console.log('Login');
-    navigation.navigate('TabBar');
+    const data = {
+      phone,
+      password,
+    };
+    loginUser(data)
+      .then(async (res) => {
+        await AsyncStorage.setItem('token', res.access);
+        navigation.navigate('TabBar');
+        clearInputs([setPhone, setPassword]);
+      })
+      .catch(() => {
+        Alert.alert('Login Failed', 'Username or password is incorrect.');
+      });
   };
 
   const navigateToRegister = () => {
@@ -31,7 +47,6 @@ const Login = ({ navigation }: any) => {
         <Text style={styles.heading}>Login to Clinic</Text>
         <Text style={styles.subheading}>Let us get to know you better!</Text>
       </View>
-
       <View style={styles.registerContainer}>
         <TextInput
           style={styles.input}

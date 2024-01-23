@@ -6,22 +6,41 @@ import {
   TextInput,
   TouchableOpacity,
 } from 'react-native';
+import { verifyUser } from '../../services/auth/Auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface VerificationProps {}
 
 const Verification: React.FC<VerificationProps> = ({ navigation }: any) => {
-  const [verificationCode, setVerificationCode] = useState(['', '', '', '']);
+  const [verificationCode, setVerificationCode] = useState([
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+  ]);
   const inputRefs = useRef<TextInput[]>([]);
 
   const handleVerification = () => {
-    const code = verificationCode.join('');
-    navigation.navigate('TabBar');
+    const allCode = verificationCode.join('');
+    const data = {
+      code: allCode,
+    };
+    verifyUser(data)
+      .then(async (res) => {
+        await AsyncStorage.setItem('token', res.access);
+        navigation.navigate('TabBar');
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   const handleChangeText = (text: string, index: number) => {
     let newCode = [...verificationCode];
     newCode[index] = text;
-    if (index < 3 && text !== '') {
+    if (index < 5 && text !== '') {
       inputRefs.current[index + 1].focus();
     }
     setVerificationCode(newCode);

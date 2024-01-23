@@ -4,9 +4,15 @@ import UserProfile from '../../screens/user-profile/UserProfile';
 import Home from '../../screens/home/Home';
 const Tab = createBottomTabNavigator();
 import Icon from 'react-native-vector-icons/Ionicons';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet } from 'react-native';
+import HeaderTitle from '../header/HeaderTitle';
 
-const TabBar = () => {
+const TabBar = ({ navigation }: any) => {
+  const headersTitleIcons = [
+    { name: 'chatbox-outline', color: '#000', size: 25, screen: 'TabBar' },
+    { name: 'time-outline', color: '#000', size: 25, screen: 'Appointment' },
+  ];
+
   return (
     <Tab.Navigator>
       <Tab.Screen
@@ -16,10 +22,7 @@ const TabBar = () => {
             <Icon name='home' color={color} size={size} />
           ),
           headerTitle: () => (
-            <View style={styles.header}>
-              <Icon name='notifications' color={'red'} size={25} />
-              <Icon name='chatbox' color={'#064C7E'} size={25} />
-            </View>
+            <HeaderTitle icons={headersTitleIcons} navigation={navigation} />
           ),
         }}
         name='Home'

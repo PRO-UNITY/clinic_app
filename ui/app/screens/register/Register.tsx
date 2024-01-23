@@ -6,14 +6,28 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import React from 'react';
+import { registerUser } from '../../services/auth/Auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Register = ({ navigation }: any) => {
   const [phone, setPhone] = React.useState('');
   const [password, setPassword] = React.useState('');
-  const [confirmPassword, setConfirmPassword] = React.useState('');
 
   const handleRegister = () => {
-    navigation.navigate('Verification');
+    const data = {
+      phone,
+      password,
+      groups: 3,
+    };
+    registerUser(data)
+      .then(async (res) => {
+        await AsyncStorage.setItem('token', res.access);
+        navigation.navigate('Verification');
+      })
+      .catch((err) => {
+        console.log(err);
+        console.log(data);
+      });
   };
 
   const navigateToLogin = () => {
@@ -40,15 +54,6 @@ const Register = ({ navigation }: any) => {
           onChangeText={setPassword}
           secureTextEntry={true}
           placeholder='Password'
-          keyboardType='default'
-        />
-        <TextInput
-          style={styles.input}
-          value={confirmPassword}
-          onChangeText={setConfirmPassword}
-          secureTextEntry={true}
-          placeholder='Password'
-          keyboardType='default'
         />
         <TouchableOpacity style={styles.button} onPress={handleRegister}>
           <Text style={styles.buttonText}>Register</Text>
