@@ -7,6 +7,12 @@ export const getDoctors = async () => {
   return response.data;
 };
 
+// get doctor by id
+export const getDoctorById = async (id: number) => {
+  const response = await api.get(`/profile/${id}`);
+  return response.data;
+};
+
 //make appointment with doctor
 export const makeAppointment = async (data: any) => {
   const response = await api.post(`/appointment/make_appointments/`, data);

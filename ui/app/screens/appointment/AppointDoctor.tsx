@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -10,15 +10,24 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { makeAppointment } from '../../services/doctor/doctor';
+import { getDoctorById, makeAppointment } from '../../services/doctor/doctor';
+import DoctorInfo from '../../components/doctors-card/DoctorInfo';
 
 const AppointDoctor = ({ navigation, route }: any) => {
   const { doctorId } = route.params;
+  const [doctor, setDoctor] = useState<any>({});
   const [date, setDate] = useState(new Date());
   const [time, setTime] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [content, setContent] = useState('');
+
+  useEffect(() => {
+    getDoctorById(doctorId).then((res) => {
+      console.log(res);
+      setDoctor(res);
+    });
+  }, []);
 
   const onChangeDate = (event: any, selectedDate: any) => {
     const currentDate = selectedDate || date;
@@ -56,7 +65,6 @@ const AppointDoctor = ({ navigation, route }: any) => {
       .padStart(2, '0')}`;
     console.log('Selected Time:', formattedTime);
 
-    // Make appointment
     const data = {
       content,
       date: formattedDate,
@@ -76,6 +84,20 @@ const AppointDoctor = ({ navigation, route }: any) => {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+        <DoctorInfo
+          first_name={doctor?.first_name}
+          review={doctor?.reviews}
+          about={
+            doctor?.about
+              ? doctor?.about
+              : ' Lorem ipsum, dolor sit amet consectetur adipisicing elit. Dignissimos, laborum sunt libero minus animi repudiandae nam illum soluta architecto similique eveniet id, eos, quaerat necessitatibus itaque reiciendis. Dolorum, totam reiciendis?'
+          }
+          avatar={
+            doctor?.avatar
+              ? doctor?.avatar
+              : 'https://img.freepik.com/free-photo/medium-shot-smiley-man-wearing-coat_23-2148816193.jpg'
+          }
+        />
         <Text style={styles.title}>Appoint doctor</Text>
         <View style={styles.content}>
           <Text>Current doctor name and phone number or email</Text>

@@ -44,7 +44,6 @@ const Home = ({ navigation }: any) => {
         //@ts-ignore
         onChangeText={(text: any) => handleSearch(text)}
       />
-
       <Banner
         bgColor='#cbe8fe'
         titleColor='#054A80'
@@ -61,7 +60,11 @@ const Home = ({ navigation }: any) => {
           name={doctor.email}
           rating={doctor.reviews}
           specialty={doctor.categories ? doctor.categories : 'Urolog'}
-          imageUrl={doctor.avatar}
+          imageUrl={
+            doctor.avatar
+              ? doctor.avatar
+              : 'https://img.freepik.com/free-photo/medium-shot-smiley-man-wearing-coat_23-2148816193.jpg'
+          }
           icon='star'
           iconColor='#FFC700'
           phone={doctor.phone}
