@@ -23,7 +23,7 @@ const Home = ({ navigation }: any) => {
     //   doctor.email.toLowerCase().includes(text.toLowerCase())
     // );
     // setDoctors(filteredDoctors);
-    // setSearchQuery(text);
+    setSearchQuery(text);
     console.log(text);
   };
 

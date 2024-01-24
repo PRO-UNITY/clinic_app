@@ -7,6 +7,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { StyleSheet } from 'react-native';
 import HeaderTitle from '../header/HeaderTitle';
 import Appointment from '../../screens/appointment/Appointment';
+import Categories from '../../screens/categories/Categories';
 
 const TabBar = ({ navigation }: any) => {
   const headersTitleIcons = [
@@ -33,6 +34,16 @@ const TabBar = ({ navigation }: any) => {
         }}
         name='Home'
         component={Home}
+      />
+      <Tab.Screen
+        options={{
+          tabBarLabel: 'Categories',
+          tabBarIcon: ({ color, size }) => (
+            <Icon name='apps' color={color} size={size} />
+          ),
+        }}
+        name='Categories'
+        component={Categories}
       />
       <Tab.Screen
         options={{

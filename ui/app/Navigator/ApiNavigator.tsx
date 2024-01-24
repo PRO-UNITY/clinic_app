@@ -6,11 +6,10 @@ import Login from '../screens/login/Login';
 import Welcome from '../screens/welcome/Welcome';
 import Verification from '../screens/verification/Verification';
 import ForgotPassword from '../screens/forgot-password/ForgotPassword';
-import Home from '../screens/home/Home';
-import UserProfile from '../screens/user-profile/UserProfile';
 import TabBar from '../components/tabbar/Tabbar';
 import Appointment from '../screens/appointment/Appointment';
 import AppointDoctor from '../screens/appointment/AppointDoctor';
+import { StyleSheet } from 'react-native';
 
 const Stack = createStackNavigator();
 

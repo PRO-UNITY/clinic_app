@@ -70,6 +70,8 @@ export default Appointment;
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+    // backgroundColor: '#fff',
     paddingHorizontal: 25,
     paddingTop: 25,
     paddingBottom: 25,
