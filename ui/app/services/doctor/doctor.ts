@@ -1,38 +1,22 @@
 import { BASE_URL } from '../../utils';
-import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import api from '../../utils/fetchApi';
 
 // get doctors
 export const getDoctors = async () => {
-  const response = await axios.get(`${BASE_URL}/doctors`);
+  const response = await api.get(`${BASE_URL}/doctors`);
   return response.data;
 };
 
-// make appointment with doctor
+//make appointment with doctor
 export const makeAppointment = async (data: any) => {
-  const token = await AsyncStorage.getItem('token');
-  const headers = {
-    Authorization: `Bearer ${token}`,
-  };
-  const response = await axios.post(
-    `${BASE_URL}/appointment/make_appointments/`,
-    data,
-    { headers }
-  );
+  const response = await api.post(`/appointment/make_appointments/`, data);
   return response.data;
 };
 
 // get appointment doctors
-export const getAppointmentDoctors = async () => {
-  const token = await AsyncStorage.getItem('token');
-  console.log(token);
 
-  const headers = {
-    Authorization: `Bearer ${token}`,
-  };
-  const response = await axios.get(
-    `${BASE_URL}/appointment/make_appointments/`,
-    { headers }
-  );
+// get appointment doctors with api call
+export const getAppointmentDoctors = async () => {
+  const response = await api.get(`/appointment/make_appointments/`);
   return response.data;
 };
