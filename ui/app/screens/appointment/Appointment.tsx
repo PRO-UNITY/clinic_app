@@ -4,13 +4,17 @@ import Banner from '../../components/banner/Banner';
 import { ScrollView } from 'react-native-gesture-handler';
 import DoctorsCard from '../../components/doctors-card/DoctorsCard';
 import { getAppointmentDoctors } from '../../services/doctor/doctor';
+import DoctorAppointCard from '../../components/doctors-card/DoctorAppointCard';
 
 const Appointment = () => {
   const [doctors, setDoctors] = React.useState<any>([]);
 
   // get appointment doctors
   useEffect(() => {
-    getAppointmentDoctors().then((res: any) => setDoctors(res.results));
+    getAppointmentDoctors().then((res: any) => {
+      console.log(res.results);
+      setDoctors(res.results);
+    });
   }, []);
 
   return (
@@ -23,11 +27,18 @@ const Appointment = () => {
       />
       <Text style={styles.title}>Your appointment doctors</Text>
       {doctors?.map((doctor: any) => (
-        <DoctorsCard
+        <DoctorAppointCard
           key={doctor.id}
-          name={doctor.email ? doctor.email : 'No email'}
+          name={doctor.doctor.first_name ? doctor.doctor.first_name : 'No name'}
           rating={doctor.reviews ? doctor.reviews : 1.1}
-          specialty={doctor.categories ? doctor.categories : 'No categories'}
+          date={doctor.timestamp ? doctor.timestamp : 'No date'}
+          time={doctor.timestamp ? doctor.timestamp : 'No time'}
+          status={doctor?.status ? doctor.status : 'No status'}
+          specialty={
+            doctor?.doctor?.categories
+              ? doctor?.doctor.categories
+              : 'No categories'
+          }
           imageUrl={
             doctor.avatar
               ? doctor.avatar

@@ -19,11 +19,12 @@ const Home = ({ navigation }: any) => {
   const handleSearch = (text: string) => {
     // You can implement search logic here
     // For simplicity, let's filter doctors by their name
-    const filteredDoctors = doctors.filter((doctor) =>
-      doctor.email.toLowerCase().includes(text.toLowerCase())
-    );
-    setDoctors(filteredDoctors);
-    setSearchQuery(text);
+    // const filteredDoctors = doctors.filter((doctor) =>
+    //   doctor.email.toLowerCase().includes(text.toLowerCase())
+    // );
+    // setDoctors(filteredDoctors);
+    // setSearchQuery(text);
+    console.log(text);
   };
 
   return (
