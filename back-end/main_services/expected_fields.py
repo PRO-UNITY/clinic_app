@@ -1,7 +1,7 @@
 from main_services.responses import bad_request_response
 
-def check_required_key(request, key, custom_message=None):
-    if key not in request.data:
-        error_message = custom_message or f"{key} key is missing in the request data"
-        return bad_request_response(error_message)
-    return None
+def check_required_key(request, expected_fields):
+    received_fields = set(request.data.keys())
+    unexpected_fields = received_fields - expected_fields
+    if unexpected_fields:
+        return unexpected_fields

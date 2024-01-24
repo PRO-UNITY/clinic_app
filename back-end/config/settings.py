@@ -166,6 +166,7 @@ REST_FRAMEWORK = {
         "rest_framework.parsers.FormParser",
         "rest_framework.parsers.MultiPartParser",
     ),
+    'DATETIME_FORMAT': "%Y-%m-%d - %H:%M:%S",
 }
 
 SIMPLE_JWT = {

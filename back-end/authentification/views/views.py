@@ -1,16 +1,10 @@
-
-from django.contrib.auth import authenticate
 from django.core.exceptions import ObjectDoesNotExist
-from django.shortcuts import get_object_or_404, redirect, reverse
 from django.db.models import Q
-from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from authentification.models import SmsHistory
 from authentification.serializer.serializer import (
-    CustomUserListSerializer,
     SendSmsCodeSerializer, RegisterSerializer, LoginSerializer
 )
 from main_services.main import get_token_for_user, UserRenderers
@@ -18,23 +12,19 @@ from main_services.responses import (
     bad_request_response,
     success_response,
     success_created_response,
-    user_not_found_response,
     unauthorized_response
 )
 from main_services.swaggers import swagger_extend_schema, swagger_schema
+from main_services.expected_fields import check_required_key
 
 
-def check_expected_fields(request, valid_fields):
-    pass
-
-
-@swagger_extend_schema(fields={"phone", "password"}, description="Register")
+@swagger_extend_schema(fields={"phone", "password"}, description="Send sms code")
 @swagger_schema(serializer=SendSmsCodeSerializer)
 class SendSmsViews(APIView):
 
     def post(self, request):
-        valid_fields = {"phone", "password"}
-        unexpected_fields = check_expected_fields(request, valid_fields)
+        valid_fields = {"phone", "password", "groups"}
+        unexpected_fields = check_required_key(request, valid_fields)
         if unexpected_fields:
             return bad_request_response(f"Unexpected fields: {', '.join(unexpected_fields)}")
 
@@ -47,7 +37,7 @@ class SendSmsViews(APIView):
         return bad_request_response(serializer.errors)
 
 
-@swagger_extend_schema(fields={"code"}, description="Register")
+@swagger_extend_schema(fields={"code"}, description="Verification sms code")
 @swagger_schema(serializer=SendSmsCodeSerializer)
 class VerificationSmsCodeView(APIView):
     render_classes = [UserRenderers]
@@ -55,7 +45,7 @@ class VerificationSmsCodeView(APIView):
 
     def put(self, request):
         valid_fields = {"code"}
-        unexpected_fields = check_expected_fields(request, valid_fields)
+        unexpected_fields = check_required_key(request, valid_fields)
         if unexpected_fields:
             return bad_request_response(f"Unexpected fields: {', '.join(unexpected_fields)}")
 
@@ -74,8 +64,7 @@ class VerificationSmsCodeView(APIView):
             if check_code and check_code.code == int(sms_code):
                 self.activate_user(check_code.user)
                 token = get_token_for_user(check_code.user)
-                return Response({"token": token})
-
+                return success_response(token)
             return bad_request_response("The verification code was entered incorrectly")
 
         except ObjectDoesNotExist:
@@ -100,7 +89,7 @@ class RegisterCustomUserViews(APIView):
             return unauthorized_response("Token is not valid")
 
         valid_fields = {'phone', 'first_name', 'last_name', 'address', 'information', 'gender', 'categories', 'date_of_birth', 'avatar', 'password'}
-        unexpected_fields = check_expected_fields(request, valid_fields)
+        unexpected_fields = check_required_key(request, valid_fields)
         if unexpected_fields:
             return bad_request_response(f"Unexpected fields: {', '.join(unexpected_fields)}")
 
@@ -118,7 +107,7 @@ class RegisterCustomUserViews(APIView):
 class LoginView(APIView):
 
     def post(self, request, *args, **kwargs):
-        expected_fields = set(["phone", "password"])
+        expected_fields = {"phone", "password"}
         received_fields = set(request.data.keys())
         unexpected_fields = received_fields - expected_fields
 

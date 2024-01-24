@@ -26,6 +26,7 @@ class CustomUserManager(BaseUserManager):
 
 class Categories(models.Model):
     name = models.CharField(max_length=255, null=True, blank=True)
+    logo = models.ImageField(upload_to="logo/", null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -53,9 +54,9 @@ class Hospital(models.Model):
     address = models.CharField(max_length=255, null=True, blank=True)
     phone = models.CharField(max_length=255, null=True, blank=True)
     logo = models.ImageField(upload_to="logo/", null=True, blank=True)
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True, related_name="authorHospital")
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True,
+                               related_name="authorHospital")
     create_at = models.DateField(auto_now_add=True, null=True, blank=True)
-
 
     def __str__(self):
         return self.name
@@ -110,3 +111,41 @@ class SmsHistory(models.Model):
         db_table = "table_sms_history"
         verbose_name = "History User code"
         verbose_name_plural = "History User codes"
+
+
+class ReviewDoctors(models.Model):
+    doctor = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, blank=True, related_name="doctorRating")
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, blank=True, related_name="userRating")
+    rating = models.IntegerField(null=True, blank=True, default=0)
+    content = models.TextField(null=True, blank=True)
+    create_at = models.DateField(auto_now_add=True, null=True, blank=True)
+
+    class Meta:
+        db_table = "table_review_doctors"
+        verbose_name = "Review Doctor"
+        verbose_name_plural = "Review Doctors"
+
+
+STATUS_TYPES = (
+    ('IN_PROGRESS', 'IN_PROGRESS'),
+    ('IN_QUEUE', 'IN_QUEUE'),
+    ('CANCELLED', 'CANCELLED'),
+    ('ONGOING', 'ONGOING'),
+    ('COMPLETED', 'COMPLETED'),
+)
+
+
+class MakeAppointments(models.Model):
+    doctor = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, blank=True,
+                               related_name="doctorAppointment")
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, blank=True,
+                             related_name="userAppointment")
+    content = models.TextField(null=True, blank=True)
+    status = models.CharField(max_length=255, choices=STATUS_TYPES, default='IN_PROGRESS')
+    timestamp = models.DateTimeField(null=True, blank=True)
+    create_at = models.DateField(auto_now_add=True, null=True, blank=True)
+
+    class Meta:
+        db_table = "table_make_appointment"
+        verbose_name = "Make Appointment"
+        verbose_name_plural = "Make Appointments"

@@ -1,4 +1,3 @@
-
 from django.contrib.auth import authenticate
 from django.shortcuts import get_object_or_404, redirect, reverse
 from django.db.models import Q
@@ -7,12 +6,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from authentification.models import Hospital
-from authentification.serializer.serializer import (
-    CustomUserListSerializer,
-    SendSmsCodeSerializer
-)
-from main_services.main import get_token_for_user, UserRenderers
+from main_services.main import get_token_for_user, UserRenderers, PaginationMethod
+from main_services.pagination import StandardResultsSetPagination
 from main_services.responses import (
     bad_request_response,
     success_response,
@@ -20,57 +15,64 @@ from main_services.responses import (
     user_not_found_response,
     unauthorized_response
 )
-from hospital.serializer.serializer import HospitalSerializer, HospitalCreateSerializer
 from main_services.swaggers import swagger_extend_schema, swagger_schema
-from main_services.main import PaginationMethod
 from main_services.expected_fields import check_required_key
+from rating.serializers.serializer import ReviewDoctorsSerializer, ReviewDoctorsCreateSerializer
+from authentification.models import ReviewDoctors
 
-@swagger_extend_schema(fields={'name', 'address', 'phone', 'author', 'logo'}, description="Register")
-@swagger_schema(serializer=HospitalCreateSerializer)
-class HospitalViews(APIView, PaginationMethod):
+
+class RatingListView(APIView, PaginationMethod):
     permission_classes = [IsAuthenticated]
     render_classes = [UserRenderers]
+    pagination_class = StandardResultsSetPagination
 
     def get(self, request):
-        hospitals = Hospital.objects.all()
-        serializer = HospitalSerializer(hospitals, many=True, context={'request': request})
+        if not request.user.is_authenticated:
+            return unauthorized_response("Token is not valid")
+        if request.user.groups.filter(name='doctor').exists():
+            reviews = ReviewDoctors.objects.select_related('doctor').filter(
+                doctor=request.user
+            )
+            serializer = super().page(reviews, ReviewDoctorsSerializer, request)
+            return success_response(serializer.data)
+
+        reviews = ReviewDoctors.objects.select_related('user').filter(
+            user=request.user
+        )
+        serializer = super().page(reviews, ReviewDoctorsSerializer, request)
         return success_response(serializer.data)
 
     def post(self, request):
-        if not request.user.is_authenticated:
-            return unauthorized_response("Token is not valid")
-
-        valid_fields = {'name', 'address', 'phone', 'author', 'logo'}
+        valid_fields = {'doctor', 'content', 'rating'}
         unexpected_fields = check_required_key(request, valid_fields)
         if unexpected_fields:
             return bad_request_response(f"Unexpected fields: {', '.join(unexpected_fields)}")
 
-        serializer = HospitalCreateSerializer(data=request.data, context={'request':request, 'user': request.user, 'logo': request.FILES.get('logo', None)})
+        serializer = ReviewDoctorsCreateSerializer(data=request.data, context={'request': request})
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return success_created_response(serializer.data)
         return bad_request_response(serializer.errors)
 
 
-@swagger_schema(serializer=HospitalSerializer)
-class HospitalDetailsViews(APIView):
+class RatingDetailsView(APIView):
     permission_classes = [IsAuthenticated]
     render_classes = [UserRenderers]
 
     def get(self, request, pk):
-        hospital = get_object_or_404(request.user.hospital, pk=pk)
-        serializer = HospitalSerializer(hospital, context={'request': request})
+        queryset = get_object_or_404(ReviewDoctors, pk=pk)
+        serializer = ReviewDoctorsSerializer(queryset)
         return success_response(serializer.data)
 
     def put(self, request, pk):
-        hospital = get_object_or_404(request.user.hospital, pk=pk)
-        serializer = HospitalCreateSerializer(hospital, data=request.data, partial=True, context={'user': request.user, 'logo': request.FILES.get('logo', None)})
+        queryset = get_object_or_404(ReviewDoctors, pk=pk)
+        serializer = ReviewDoctorsCreateSerializer(queryset, data=request.data, context={'request': request})
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return success_response(serializer.data)
         return bad_request_response(serializer.errors)
 
     def delete(self, request, pk):
-        hospital = get_object_or_404(request.user.hospital, pk=pk)
-        hospital.delete()
-        return success_response("Hospital deleted")
+        queryset = get_object_or_404(ReviewDoctors, pk=pk)
+        queryset.delete()
+        return success_response("Review deleted")

@@ -7,7 +7,9 @@ from authentification.models import (
     Gender,
     Categories,
     SmsHistory,
-    Hospital
+    Hospital,
+    ReviewDoctors,
+    MakeAppointments,
 )
 
 
@@ -43,8 +45,18 @@ class HospitalAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_display = ['id', 'name', 'address', 'phone', 'author', 'logo']
 
 
+class ReviewDoctorsAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+    list_display = ['id', 'doctor', 'user', 'content', 'rating', 'create_at']
+
+
+class MakeAppointmentsAdmin(admin.ModelAdmin):
+    list_display = ('doctor', 'user', 'content', 'status', 'timestamp', 'create_at')
+
+
+admin.site.register(MakeAppointments, MakeAppointmentsAdmin)
 admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(Gender, GenderAdmin)
 admin.site.register(Categories, CategoriesAdmin)
 admin.site.register(SmsHistory)
 admin.site.register(Hospital, HospitalAdmin)
+admin.site.register(ReviewDoctors, ReviewDoctorsAdmin)

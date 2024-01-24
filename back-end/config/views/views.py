@@ -1,18 +1,15 @@
-from django.contrib.auth import authenticate
 from django.shortcuts import get_object_or_404, redirect, reverse
 from django.db.models import Q
-from rest_framework import status
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
 from rest_framework.views import APIView
-
 from authentification.models import CustomUser
 from authentification.serializer.serializer import (
     CustomUserListSerializer,
-    SendSmsCodeSerializer, RegisterSerializer
+    RegisterSerializer,
 )
-from authentification.views.views import check_expected_fields
-from main_services.main import get_token_for_user, UserRenderers
+from main_services.main import UserRenderers, PaginationMethod
+from main_services.pagination import StandardResultsSetPagination
 from main_services.responses import (
     bad_request_response,
     success_response,
@@ -21,7 +18,12 @@ from main_services.responses import (
     unauthorized_response
 )
 from main_services.swaggers import swagger_extend_schema, swagger_schema
-
+from main_services.expected_fields import check_required_key
+from config.services.filters import (
+    filter_by_first_name,
+    filter_by_last_name,
+    filter_by_category
+)
 
 @swagger_extend_schema(fields={'name', 'address', 'phone', 'author', 'logo'}, description="Custom User Profile")
 @swagger_schema(serializer=RegisterSerializer)
@@ -38,7 +40,7 @@ class ProfileViews(APIView):
             return unauthorized_response("Token is not valid")
 
         valid_fields = {'phone', 'first_name', 'last_name', 'address', 'information', 'gender', 'categories', 'date_of_birth', 'avatar', 'password'}
-        unexpected_fields = check_expected_fields(request, valid_fields)
+        unexpected_fields = check_required_key(request, valid_fields)
         if unexpected_fields:
             return bad_request_response(f"Unexpected fields: {', '.join(unexpected_fields)}")
 
@@ -62,7 +64,7 @@ class CustomUserDetailsViews(APIView):
 
     def get(self, request, pk):
         user = get_object_or_404(CustomUser, pk=pk)
-        serializer = CustomUserListSerializer(user)
+        serializer = CustomUserListSerializer(user, context={'request': request, 'user': user})
         return success_response(serializer.data)
 
     def put(self, request, pk):
@@ -71,7 +73,7 @@ class CustomUserDetailsViews(APIView):
 
         valid_fields = {'phone', 'first_name', 'last_name', 'address', 'information', 'gender', 'categories',
                         'date_of_birth', 'avatar', 'password'}
-        unexpected_fields = check_expected_fields(request, valid_fields)
+        unexpected_fields = check_required_key(request, valid_fields)
         if unexpected_fields:
             return bad_request_response(f"Unexpected fields: {', '.join(unexpected_fields)}")
 
@@ -87,4 +89,36 @@ class CustomUserDetailsViews(APIView):
         user = get_object_or_404(CustomUser, pk=pk)
         user.delete()
         return success_response("User deleted")
+
+
+@swagger_extend_schema(fields={}, description="Doctors")
+@swagger_schema(serializer=CustomUserListSerializer)
+class DoctorsViews(APIView, PaginationMethod):
+    pagination_class = StandardResultsSetPagination
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['first_name', 'last_name', 'category']
+
+    def get(self, request):
+        queryset = CustomUser.objects.prefetch_related('groups').filter(groups__name__in=['doctor']).order_by('id')
+        queryset = filter_by_first_name(queryset, request)
+        queryset = filter_by_last_name(queryset, request)
+        queryset = filter_by_category(queryset, request)
+        serializer = super().page(queryset, CustomUserListSerializer, request)
+        return success_response(serializer.data)
+
+
+@swagger_extend_schema(fields={}, description="Patients")
+@swagger_schema(serializer=CustomUserListSerializer)
+class PatientsViews(APIView, PaginationMethod):
+    pagination_class = StandardResultsSetPagination
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['first_name', 'last_name']
+
+    def get(self, request):
+        queryset = CustomUser.objects.prefetch_related('groups').filter(groups__name__in=['patient']).order_by('id')
+        queryset = filter_by_first_name(queryset, request)
+        queryset = filter_by_last_name(queryset, request)
+        serializer = super().page(queryset, CustomUserListSerializer, request)
+        return success_response(serializer.data)
+
 

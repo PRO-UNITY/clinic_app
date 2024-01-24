@@ -15,7 +15,7 @@ def user_not_found_response(error_message):
 
 
 def success_response(message):
-    return Response({"success": message}, status=status.HTTP_200_OK)
+    return Response(message, status=status.HTTP_200_OK)
 
 
 def success_created_response(data):

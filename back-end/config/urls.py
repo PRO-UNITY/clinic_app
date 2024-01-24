@@ -8,11 +8,8 @@ from drf_spectacular.views import SpectacularAPIView
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
-from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
-    TokenRefreshView, TokenBlacklistView,
-)
 from config.views import views
+from config.views import category
 
 admin.site.site_url = None
 schema_view = get_schema_view(
@@ -48,8 +45,14 @@ urlpatterns = [
 
     path('auth', include('authentification.urls')),
     path('hospital', include('hospital.urls')),
+    path('review/', include('rating.urls')),
+    path('appointment/', include('appointments.urls')),
     path('profile', views.ProfileViews.as_view()),
     path('profile/<int:pk>', views.CustomUserDetailsViews.as_view()),
+    path('doctors/', views.DoctorsViews.as_view()),
+    path('patients/', views.PatientsViews.as_view()),
+    path('category/', category.CategoryViews.as_view()),
+    path('category/<int:pk>', category.CategoryDetailViews.as_view()),
 ]
 
 

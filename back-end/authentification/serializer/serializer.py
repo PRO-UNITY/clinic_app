@@ -1,3 +1,4 @@
+from django.db.models import Avg, OuterRef, Subquery
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
@@ -13,7 +14,7 @@ from authentification.models import (
     Gender,
     CustomUser,
     Categories,
-    SmsHistory,
+    SmsHistory, ReviewDoctors,
 )
 from authentification.services.get_role import get_role, get_gender
 from authentification.services.generate_code import generate_sms_code, generate_password
@@ -33,38 +34,84 @@ class GenderSerializer(serializers.ModelSerializer):
 
 class CategoriesSerializer(serializers.ModelSerializer):
 
+    doctors_set = serializers.SerializerMethodField()
+
     class Meta:
         model = Categories
         fields = [
             "id",
+            'logo',
             "name",
+            'doctors_set'
         ]
+
+    def get_doctors_set(self, obj):
+        doctors = (
+            CustomUser.objects.filter(categories=obj)
+            .annotate(rating=Avg('doctorRating__rating'))
+            .values('id', 'first_name', 'last_name', 'avatar', 'phone', 'gender', 'rating')
+        )
+        return list(doctors)
+
+
+    def create(self, validated_data):
+        create = Categories.objects.create(**validated_data)
+        create.logo = self.context.get('logo')
+        create.save()
+        return create
+
+    def update(self, instance, validated_data):
+        if self.context.get('logo') == None:
+            instance.logo = instance.logo
+        instance.logo = self.context.get('logo')
+        instance = super(CategoriesSerializer, self).update(instance, validated_data)
+        instance.save()
+        return instance
 
 
 class CustomUserListSerializer(serializers.ModelSerializer):
-    gender = GenderSerializer(read_only=True)
-    categories = CategoriesSerializer(read_only=True)
+    gender = serializers.SerializerMethodField()
+    categories = serializers.SerializerMethodField()
     hospital = HospitalSerializer(read_only=True)
     role = serializers.SerializerMethodField()
+    reviews = serializers.SerializerMethodField()
+    content = serializers.SerializerMethodField()
 
     class Meta:
         model = get_user_model()
         fields = [
             "id", 'first_name', 'last_name', 'phone', 'date_of_birth',
             'address', 'information', 'gender', 'categories', 'hospital',
-            'avatar', 'role', 'email'
+            'avatar', 'role', 'email', 'reviews', 'content'
         ]
 
     def get_role(self, obj):
         return get_role(obj)
 
+    def get_gender(self, obj):
+        return obj.gender.name if obj.gender else "No selected gender"
+
+    def get_categories(self, obj):
+        return obj.categories.name if obj.categories else "No selected category"
+
+    def get_reviews(self, obj):
+        get_rating = ReviewDoctors.objects.filter(doctor=obj).aggregate(Avg('rating'))
+        avg_rating = get_rating.get('rating__avg')
+        return avg_rating if avg_rating is not None else 0
+
+    def get_content(self, obj):
+        get_contents = ReviewDoctors.objects.filter(doctor=obj).values('content', 'user')
+        return list(get_contents)
+
+
 class SendSmsCodeSerializer(serializers.ModelSerializer):
     phone = serializers.CharField(max_length=30, required=True, validators=[UniqueValidator(queryset=CustomUser.objects.all())])
     password = serializers.CharField(max_length=30, required=True)
+    groups = serializers.IntegerField(required=True)
 
     class Meta:
         model = CustomUser
-        fields = ["phone", 'password']
+        fields = ["phone", 'password', 'groups']
 
     def validate(self, data):
         phone = data.get("phone")
@@ -77,9 +124,16 @@ class SendSmsCodeSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         phone = validated_data.get("phone")
         password = validated_data.get("password")
+        groups = validated_data.get("groups")
         code = generate_sms_code()
 
         create_patient = CustomUser.objects.create_user(phone=phone, password=password)
+        try:
+            role = Group.objects.get(id=groups)
+            create_patient.groups.add(role)
+            create_patient.save()
+        except ObjectDoesNotExist:
+            return serializers.ValidationError({'error': "Invalid role"})
 
         try:
             send_sms(create_patient.phone, code)
@@ -143,9 +197,7 @@ class LoginSerializer(serializers.ModelSerializer):
     def validate(self, data):
         phone = data.get("phone")
         password = data.get("password")
-        print(phone, password)
         user = self.authenticate_user(phone, password)
-        print(user)
         self.validate_user(user)
 
         data["user"] = user
@@ -160,3 +212,4 @@ class LoginSerializer(serializers.ModelSerializer):
 
         if not user.is_staff:
             raise UnverifiedAccountError({"error": "Your account is not verified yet. Verify and try again."})
+
