@@ -10,6 +10,7 @@ from authentification.models import (
     Hospital,
     ReviewDoctors,
     MakeAppointments,
+    SavedDoctors
 )
 
 
@@ -60,3 +61,4 @@ admin.site.register(Categories, CategoriesAdmin)
 admin.site.register(SmsHistory)
 admin.site.register(Hospital, HospitalAdmin)
 admin.site.register(ReviewDoctors, ReviewDoctorsAdmin)
+admin.site.register(SavedDoctors)

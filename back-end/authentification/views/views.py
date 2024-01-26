@@ -7,6 +7,7 @@ from authentification.models import SmsHistory
 from authentification.serializer.serializer import (
     SendSmsCodeSerializer, RegisterSerializer, LoginSerializer
 )
+from authentification.services.generate_code import generate_sms_code
 from main_services.main import get_token_for_user, UserRenderers
 from main_services.responses import (
     bad_request_response,
@@ -16,17 +17,27 @@ from main_services.responses import (
 )
 from main_services.swaggers import swagger_extend_schema, swagger_schema
 from main_services.expected_fields import check_required_key
+from authentification.services.send_sms import send_sms
 
 
 @swagger_extend_schema(fields={"phone", "password"}, description="Send sms code")
 @swagger_schema(serializer=SendSmsCodeSerializer)
 class SendSmsViews(APIView):
+    render_classes = [UserRenderers]
+    perrmisson_class = [IsAuthenticated]
 
     def post(self, request):
         valid_fields = {"phone", "password", "groups"}
         unexpected_fields = check_required_key(request, valid_fields)
         if unexpected_fields:
             return bad_request_response(f"Unexpected fields: {', '.join(unexpected_fields)}")
+
+        if request.user.is_authenticated:
+            code = generate_sms_code()
+            send_sms(request.user, code)
+            create_sms_history = SmsHistory.objects.create(user=request.user, code=code)
+            token = get_token_for_user(request.user)
+            return success_created_response(token)
 
         serializer = SendSmsCodeSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):

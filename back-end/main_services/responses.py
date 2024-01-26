@@ -20,3 +20,7 @@ def success_response(message):
 
 def success_created_response(data):
     return Response(data, status=status.HTTP_201_CREATED)
+
+
+def success_deleted_response(message):
+    return Response({'message': message}, status=status.HTTP_204_NO_CONTENT)

@@ -53,6 +53,9 @@ urlpatterns = [
     path('patients/', views.PatientsViews.as_view()),
     path('category/', category.CategoryViews.as_view()),
     path('category/<int:pk>', category.CategoryDetailViews.as_view()),
+    path('saved', views.SavedDoctorsView.as_view()),
+    path('saved/<int:pk>', views.SavedDoctorsDetailView.as_view()),
+    path('gender', views.GenderView.as_view()),
 ]
 
 

@@ -68,14 +68,16 @@ class MakeAppointmentsSerializer(serializers.ModelSerializer):
         date_data = validated_data.pop('date')
         time_data = validated_data.pop('time')
         doctor = validated_data.pop('doctor')
+        print(doctor)
 
         timestamp = datetime.datetime.combine(date_data, time_data)
+        print(timestamp)
         check_doctor = MakeAppointments.objects.filter(doctor=doctor, timestamp=timestamp).exists()
         if check_doctor:
             raise serializers.ValidationError({'msg': "Doctor is busy at this time"})
 
-        instance.timestamp = timestamp, instance.timestamp
-        instance.doctor = doctor, instance.doctor
+        instance.timestamp = timestamp
+        instance.doctor = doctor
         instance.content = validated_data.get('content', instance.content)
         instance.save()
         return instance
@@ -99,14 +101,27 @@ class MakeAppointmentsPatientSerializer(serializers.ModelSerializer):
 
     def get_user(self, obj):
         return list(
-            CustomUser.objects.filter(id=obj.user.id).values('id', 'first_name', 'last_name', 'avatar', 'categories',
+            CustomUser.objects.filter(id=obj.user.id).values('id', 'first_name', 'last_name', 'avatar', 'categories__name',
                                                              'gender'))[0]
 
     def get_doctor(self, obj):
         return list(
-            CustomUser.objects.filter(id=obj.doctor.id).values('id', 'first_name', 'last_name', 'avatar', 'categories',
+            CustomUser.objects.filter(id=obj.doctor.id).values('id', 'first_name', 'last_name', 'avatar', 'categories__name',
                                                              'gender'))[0]
 
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        request = self.context.get('request')
+        if 'user' in representation and 'avatar' in representation['user']:
+            logo_path = representation['user']['avatar']
+            if logo_path and request:
+                representation['user']['avatar'] = request.build_absolute_uri('/media/'+logo_path)
 
+        if 'doctor' in representation and 'avatar' in representation['doctor']:
+            logo_path = representation['doctor']['avatar']
+            if logo_path and request:
+                representation['doctor']['avatar'] = request.build_absolute_uri('/media/'+logo_path)
+
+        return representation
 
 

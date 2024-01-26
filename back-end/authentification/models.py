@@ -149,3 +149,51 @@ class MakeAppointments(models.Model):
         db_table = "table_make_appointment"
         verbose_name = "Make Appointment"
         verbose_name_plural = "Make Appointments"
+
+
+class SavedDoctors(models.Model):
+    doctor = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, blank=True,
+                               related_name="doctorSaved")
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, blank=True, related_name="userSaved")
+    is_activate = models.BooleanField(default=True, null=True, blank=True)
+    create_at = models.DateField(auto_now_add=True, null=True, blank=True)
+
+    class Meta:
+        db_table = "table_saved_doctors"
+        verbose_name = "Saved Doctor"
+        verbose_name_plural = "Saved Doctors"
+
+#
+# NOTIFICATION_TYPES = (
+#     ('USER_APPLIED_SEND_REQUEST', 'APPLIED_SEND_REQUEST'),
+#     ('HR_ACCEPTED_SEND_REQUEST', 'ACCEPTED_SEND_REQUEST'),
+#     ('HR_REJECTED_SEND_REQUEST', 'REJECTED_SEND_REQUEST'),
+#     ('MESSAGE_SENT', 'MESSAGE_SENT'),
+# )
+#
+#
+# class Notification(models.Model):
+#     notification_type = models.CharField(max_length=255, choices=NOTIFICATION_TYPES)
+#     appointments = models.ForeignKey(
+#         MakeAppointments,
+#         on_delete=models.CASCADE,
+#         null=True,
+#         blank=True,
+#         related_name='notificationAppointments'
+#     )
+#     is_seen = models.BooleanField(default=False, null=True, blank=True)
+#
+#     user = models.ForeignKey(
+#         settings.AUTH_USER_MODEL,
+#         on_delete=models.CASCADE,
+#         null=True,
+#         blank=True,
+#         related_name="notificationCustomUser",
+#     )
+#     created_at = models.DateField(auto_now_add=True, null=True, blank=True)
+#
+#
+#     class Meta:
+#         db_table = "table_notification"
+#         verbose_name = "Notification"
+#         verbose_name_plural = "Notification"

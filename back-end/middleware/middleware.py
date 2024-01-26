@@ -1,7 +1,7 @@
-from django.conf import settings
 from django.http import JsonResponse
 from rest_framework import status
-from django.http import Http404
+from rest_framework_simplejwt.authentication import JWTAuthentication
+
 
 class JsonErrorResponseMiddleware:
     def __init__(self, get_response):
@@ -34,3 +34,26 @@ class Custom404Middleware:
     def handle_404(self, request):
         data = {'detail': 'Page Not found'}
         return JsonResponse(data, status=status.HTTP_404_NOT_FOUND)
+
+
+def unauthorized_response():
+    return JsonResponse({'error': 'User is not authenticated'}, status=401)
+
+class SimpleJWTAuthenticationMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        # Skip middleware for Django admin, static and media requests
+        if any(map(request.path.startswith, ('/admin/', '/static/', '/media/', '/auth/', '/docs/', '/schema/'))):
+            return self.get_response(request)
+
+        # Attempt to authenticate the request
+        jwt_auth = JWTAuthentication()
+        try:
+            validated_token = jwt_auth.get_validated_token(request.META.get('HTTP_AUTHORIZATION', '').split(' ')[1])
+            request.user = jwt_auth.get_user(validated_token)
+        except Exception as e:
+            return unauthorized_response()
+
+        return self.get_response(request)

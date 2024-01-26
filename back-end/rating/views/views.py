@@ -13,7 +13,7 @@ from main_services.responses import (
     success_response,
     success_created_response,
     user_not_found_response,
-    unauthorized_response
+    unauthorized_response, success_deleted_response
 )
 from main_services.swaggers import swagger_extend_schema, swagger_schema
 from main_services.expected_fields import check_required_key
@@ -75,4 +75,4 @@ class RatingDetailsView(APIView):
     def delete(self, request, pk):
         queryset = get_object_or_404(ReviewDoctors, pk=pk)
         queryset.delete()
-        return success_response("Review deleted")
+        return success_deleted_response("Review deleted")

@@ -14,7 +14,7 @@ from authentification.models import (
     Gender,
     CustomUser,
     Categories,
-    SmsHistory, ReviewDoctors,
+    SmsHistory, ReviewDoctors, SavedDoctors,
 )
 from authentification.services.get_role import get_role, get_gender
 from authentification.services.generate_code import generate_sms_code, generate_password
@@ -53,6 +53,19 @@ class CategoriesSerializer(serializers.ModelSerializer):
         )
         return list(doctors)
 
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+
+        # Access the request from the serializer context
+        request = self.context.get('request')
+
+        if 'doctors_set' in representation:
+            for doctor in representation['doctors_set']:
+                if 'avatar' in doctor and doctor['avatar']:
+                    # Build absolute URI for avatar
+                    doctor['avatar'] = request.build_absolute_uri('/media/' + doctor['avatar'])
+
+        return representation
 
     def create(self, validated_data):
         create = Categories.objects.create(**validated_data)
@@ -76,13 +89,14 @@ class CustomUserListSerializer(serializers.ModelSerializer):
     role = serializers.SerializerMethodField()
     reviews = serializers.SerializerMethodField()
     content = serializers.SerializerMethodField()
+    is_saved = serializers.SerializerMethodField()
 
     class Meta:
         model = get_user_model()
         fields = [
             "id", 'first_name', 'last_name', 'phone', 'date_of_birth',
             'address', 'information', 'gender', 'categories', 'hospital',
-            'avatar', 'role', 'email', 'reviews', 'content'
+            'avatar', 'role', 'email', 'reviews', 'content', 'is_saved'
         ]
 
     def get_role(self, obj):
@@ -102,6 +116,12 @@ class CustomUserListSerializer(serializers.ModelSerializer):
     def get_content(self, obj):
         get_contents = ReviewDoctors.objects.filter(doctor=obj).values('content', 'user')
         return list(get_contents)
+
+    def get_is_saved(self, obj):
+        user = self.context.get('request').user
+        if user.is_authenticated:
+            return SavedDoctors.objects.filter(doctor=obj, user=user).exists()
+        return False
 
 
 class SendSmsCodeSerializer(serializers.ModelSerializer):
@@ -159,7 +179,6 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         hospital = self.context.get('request').user.hospital
-        print(hospital)
         create_user = CustomUser.objects.create_user(**validated_data)
         create_user.avatar = self.context.get('avatar')
         create_user.set_password(generate_password())

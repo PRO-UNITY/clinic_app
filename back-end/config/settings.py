@@ -45,6 +45,9 @@ INSTALLED_APPS = [
 
     "authentification",
     'hospital',
+    'chat',
+    'rating',
+    'appointments',
 
 ]
 
@@ -57,6 +60,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "middleware.middleware.SimpleJWTAuthenticationMiddleware",
     # "middleware.middleware.JsonErrorResponseMiddleware",
     # "middleware.middleware.Custom404Middleware"
 ]

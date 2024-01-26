@@ -54,3 +54,4 @@ class HospitalSerializer(serializers.ModelSerializer):
             "logo",
             "create_at",
         ]
+
