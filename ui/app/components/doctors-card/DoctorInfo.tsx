@@ -1,14 +1,36 @@
 import { Image, StyleSheet, Text, View, Platform } from 'react-native';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Doctor } from '../../types/Doctor';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { mainColor } from '../../utils/colors';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { addDoctorToSaved } from '../../services/doctor/doctor';
 
 const DoctorInfo: React.FC<Doctor> = ({
   avatar,
   first_name,
   about,
   review,
+  doctorId,
+  isFavorite,
+  onBookmarkPress,
 }) => {
+  const [isSaved, setIsSaved] = React.useState(false);
+
+  useEffect(() => {
+    console.log('isFavorite', isFavorite);
+  }, [isSaved]);
+
+  const handleSaveDoctor = () => {
+    const data = {
+      doctor: doctorId,
+    };
+    addDoctorToSaved(data).then(() => {
+      setIsSaved(true);
+      onBookmarkPress();
+    });
+  };
+
   return (
     <View style={styles.container}>
       <Image source={{ uri: avatar }} style={styles.image} />
@@ -16,10 +38,18 @@ const DoctorInfo: React.FC<Doctor> = ({
       <View style={styles.contentContainer}>
         <View style={styles.infoContainer}>
           <View>
-            <Text style={styles.infoContainerText}>Patients</Text>
-            <View style={styles.infoCard}>
-              <Text style={styles.infoCardText}>+100</Text>
-            </View>
+            <Text style={styles.infoContainerText}>Save</Text>
+            <TouchableOpacity
+              onPress={() => handleSaveDoctor()}
+              style={styles.infoCard}
+            >
+              {/* <Text style={styles.infoCardText}>+100</Text> */}
+              <Icon
+                name={isFavorite ? 'bookmark' : 'bookmark-outline'}
+                size={24}
+                color={mainColor}
+              />
+            </TouchableOpacity>
           </View>
           <View>
             <Text style={styles.infoContainerText}>Experiences</Text>
@@ -30,7 +60,7 @@ const DoctorInfo: React.FC<Doctor> = ({
           <View>
             <Text style={styles.infoContainerText}>Rating</Text>
             <View style={styles.infoCard}>
-              <Icon name='star' size={16} color='red' />
+              <Icon name='star' size={16} color='gold' />
               <Text style={styles.infoCardText}>{review}</Text>
             </View>
           </View>

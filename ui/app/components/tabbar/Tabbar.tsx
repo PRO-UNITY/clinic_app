@@ -2,26 +2,36 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import UserProfile from '../../screens/user-profile/UserProfile';
 import Home from '../../screens/home/Home';
-const Tab = createBottomTabNavigator();
 import Icon from 'react-native-vector-icons/Ionicons';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import HeaderTitle from '../header/HeaderTitle';
 import Appointment from '../../screens/appointment/Appointment';
 import Categories from '../../screens/categories/Categories';
+const Tab = createBottomTabNavigator();
 
 const TabBar = ({ navigation }: any) => {
   const headersTitleIcons = [
-    { name: 'chatbox-outline', color: '#000', size: 25, screen: 'TabBar' },
+    { name: 'chatbox-outline', color: '#000', size: 25, screen: 'ChatList' },
     {
       name: 'notifications-outline',
       color: '#000',
       size: 25,
       screen: 'Appointment',
     },
+    {
+      name: 'bookmark-outline',
+      color: '#000',
+      size: 25,
+      screen: 'SavedDoctors',
+    },
   ];
 
   return (
-    <Tab.Navigator>
+    <Tab.Navigator
+      screenOptions={({ route }) => {
+        return {};
+      }}
+    >
       <Tab.Screen
         options={{
           tabBarLabel: 'Home',
@@ -29,7 +39,9 @@ const TabBar = ({ navigation }: any) => {
             <Icon name='home' color={color} size={size} />
           ),
           headerTitle: () => (
-            <HeaderTitle icons={headersTitleIcons} navigation={navigation} />
+            <View style={styles.header}>
+              <HeaderTitle icons={headersTitleIcons} navigation={navigation} />
+            </View>
           ),
         }}
         name='Home'

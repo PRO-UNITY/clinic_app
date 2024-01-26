@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
     gap: 16,
     padding: 16,
     borderRadius: 8,
-    marginTop: 16,
+    marginTop: 12,
     backgroundColor: 'white',
     ...Platform.select({
       ios: {

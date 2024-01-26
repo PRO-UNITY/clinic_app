@@ -7,10 +7,15 @@ import {
   TouchableOpacity,
   ScrollView,
   TextInput,
+  KeyboardAvoidingView,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { getDoctorById, makeAppointment } from '../../services/doctor/doctor';
+import {
+  getDoctorById,
+  makeAppointment,
+  rescheduleAppointment,
+} from '../../services/doctor/doctor';
 import DoctorInfo from '../../components/doctors-card/DoctorInfo';
 
 const AppointDoctor = ({ navigation, route }: any) => {
@@ -24,7 +29,6 @@ const AppointDoctor = ({ navigation, route }: any) => {
 
   useEffect(() => {
     getDoctorById(doctorId).then((res) => {
-      console.log(res);
       setDoctor(res);
     });
   }, []);
@@ -56,37 +60,57 @@ const AppointDoctor = ({ navigation, route }: any) => {
     const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1)
       .toString()
       .padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
-    console.log('Selected Date:', formattedDate);
-
     // Format selected time
     const formattedTime = `${time.getHours().toString().padStart(2, '0')}:${time
       .getMinutes()
       .toString()
       .padStart(2, '0')}`;
-    console.log('Selected Time:', formattedTime);
-
     const data = {
       content,
       date: formattedDate,
       time: formattedTime,
       doctor: doctorId,
     };
-    makeAppointment(data)
-      .then((res) => {
-        console.log(res);
-        navigation.goBack();
-      })
-      .catch((err) => {
-        console.log(err);
+    if (!content) {
+      return;
+    }
+    if (route.params?.updateSchedule) {
+      rescheduleAppointment(doctorId, data).then(() => {
+        navigation.goBack({ screen: 'Appointment' });
       });
+    } else {
+      makeAppointment(data)
+        .then(() => {
+          navigation.goBack();
+        })
+        .catch((err) => {
+          alert(err.response.data.msg);
+        });
+    }
+  };
+
+  const handleBookmarkPress = () => {
+    setDoctor({ ...doctor, is_saved: !doctor.is_saved });
   };
 
   return (
-    <View style={styles.container}>
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+    <KeyboardAvoidingView
+      behavior='padding'
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 85 : 0}
+      style={styles.container}
+    >
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
+      >
         <DoctorInfo
           first_name={doctor?.first_name}
           review={doctor?.reviews}
+          doctorId={doctorId}
+          isFavorite={doctor?.is_saved}
+          //new
+          onBookmarkPress={handleBookmarkPress}
           about={
             doctor?.about
               ? doctor?.about
@@ -158,16 +182,17 @@ const AppointDoctor = ({ navigation, route }: any) => {
               value={content}
               onChangeText={(text) => setContent(text)}
               placeholder='Content'
-              // keyboardType='phone-pad'
             />
           </View>
         </View>
+        <TouchableOpacity
+          onPress={handleNextButton}
+          style={styles.customButton}
+        >
+          <Text style={styles.buttonText}>Add schedule</Text>
+        </TouchableOpacity>
       </ScrollView>
-
-      <TouchableOpacity onPress={handleNextButton} style={styles.customButton}>
-        <Text style={styles.buttonText}>Next</Text>
-      </TouchableOpacity>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 

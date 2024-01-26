@@ -1,21 +1,64 @@
-import { StyleSheet, Text, View } from 'react-native';
-import React, { useEffect } from 'react';
+import { Alert, StyleSheet, Text } from 'react-native';
+import React, { useEffect, useRef } from 'react';
 import Banner from '../../components/banner/Banner';
 import { ScrollView } from 'react-native-gesture-handler';
-import DoctorsCard from '../../components/doctors-card/DoctorsCard';
-import { getAppointmentDoctors } from '../../services/doctor/doctor';
+import {
+  getAppointmentDoctors,
+  cancelAppointment,
+} from '../../services/doctor/doctor';
 import DoctorAppointCard from '../../components/doctors-card/DoctorAppointCard';
+import { useIsFocused } from '@react-navigation/native';
 
-const Appointment = () => {
+const Appointment = ({ navigation, route }: any) => {
   const [doctors, setDoctors] = React.useState<any>([]);
+  const [deletedDoctor, setDeletedDoctor] = React.useState<any>(null);
+  const isFocused = useIsFocused();
+  console.log(route.key);
+  console.log(3);
 
   // get appointment doctors
   useEffect(() => {
     getAppointmentDoctors().then((res: any) => {
-      console.log(res.results);
       setDoctors(res.results);
     });
-  }, []);
+  }, [deletedDoctor, isFocused]);
+
+  const handleCancelConfirmation = (doctorId: any) => {
+    Alert.alert(
+      'Are you sure you want to cancel the appointment?',
+      'Cancel Confirmation',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Yes',
+          onPress: () =>
+            cancelAppointment(doctorId).then(() => setDeletedDoctor(doctorId)),
+        },
+      ]
+    );
+  };
+
+  const handleRescheduleConfirmation = (doctorId: any) => {
+    const updateSchedule = true;
+    Alert.alert(
+      'Are you sure you want to reschedule the appointment?',
+      'Reschedule Confirmation',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Yes',
+          onPress: () =>
+            navigation.navigate('AppointDoctor', { doctorId, updateSchedule }),
+        },
+      ]
+    );
+  };
 
   return (
     <ScrollView style={styles.container}>
@@ -34,6 +77,11 @@ const Appointment = () => {
           date={doctor.timestamp ? doctor.timestamp : 'No date'}
           time={doctor.timestamp ? doctor.timestamp : 'No time'}
           status={doctor?.status ? doctor.status : 'No status'}
+          navigation={navigation}
+          onCancelConfirmation={handleCancelConfirmation}
+          onRescheduleAppointment={() =>
+            handleRescheduleConfirmation(doctor.id)
+          }
           specialty={
             doctor?.doctor?.categories
               ? doctor?.doctor.categories
@@ -71,7 +119,6 @@ export default Appointment;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // backgroundColor: '#fff',
     paddingHorizontal: 25,
     paddingTop: 25,
     paddingBottom: 25,

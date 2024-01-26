@@ -7,4 +7,7 @@ export interface Doctor {
   specialty?: string;
   avatar?: string;
   about?: string;
+  doctorId?: any;
+  isFavorite?: boolean;
+  onBookmarkPress?: any;
 }

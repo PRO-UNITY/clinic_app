@@ -2,12 +2,26 @@ import { StyleSheet, Text, View, Image, Platform } from 'react-native';
 import React from 'react';
 import { Category } from '../../types/Category';
 import { mainColor } from '../../utils/colors';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
-const CategoriesCard: React.FC<Category> = ({ logo, name }) => {
+const CategoriesCard: React.FC<Category> = ({
+  logo,
+  name,
+  screen,
+  categoryId,
+  navigation,
+}) => {
   return (
     <View style={styles.container}>
-      <Image source={{ uri: logo }} style={styles.logo} />
-      <Text style={styles.textName}>{name}</Text>
+      <TouchableOpacity
+        style={styles.mdContainer}
+        onPress={() => navigation.navigate(screen, { categoryId })}
+      >
+        <Image source={{ uri: logo }} style={styles.logo} />
+        <Text style={styles.textName}>
+          {name && name.length >= 11 ? `${name.substring(0, 7)}...` : name}
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -16,7 +30,8 @@ export default CategoriesCard;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 2,
+    flexBasis: '30%',
+    height: 110,
     alignItems: 'center',
     justifyContent: 'center',
     gap: 12,
@@ -36,6 +51,9 @@ const styles = StyleSheet.create({
       },
     }),
   },
+  mdContainer: {
+    alignItems: 'center',
+  },
   logo: {
     width: 50,
     height: 50,
@@ -43,8 +61,8 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   textName: {
-    fontSize: 16,
-    color: mainColor,
+    fontSize: 14,
     fontWeight: 'bold',
+    color: '#6ab04c',
   },
 });

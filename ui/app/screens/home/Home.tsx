@@ -4,7 +4,7 @@ import { SearchBar } from 'react-native-elements';
 
 import Banner from '../../components/banner/Banner';
 import DoctorsCard from '../../components/doctors-card/DoctorsCard';
-import { getDoctors } from '../../services/doctor/doctor';
+import { getDoctors, getFilteredDoctors } from '../../services/doctor/doctor';
 import { Doctor } from '../../types/Doctor';
 
 const Home = ({ navigation }: any) => {
@@ -13,18 +13,22 @@ const Home = ({ navigation }: any) => {
 
   // get doctors
   useEffect(() => {
-    getDoctors().then((res) => setDoctors(res.results));
+    getDoctors().then((res) => {
+      setDoctors(res.results);
+      console.log(res.results);
+    });
   }, []);
 
   const handleSearch = (text: string) => {
-    // You can implement search logic here
-    // For simplicity, let's filter doctors by their name
     // const filteredDoctors = doctors.filter((doctor) =>
     //   doctor.email.toLowerCase().includes(text.toLowerCase())
     // );
+    getFilteredDoctors(text).then((res: any) => {
+      setDoctors(res.results);
+      console.log(res.results);
+    });
     // setDoctors(filteredDoctors);
     setSearchQuery(text);
-    console.log(text);
   };
 
   return (
@@ -58,7 +62,7 @@ const Home = ({ navigation }: any) => {
       {doctors?.map((doctor: any) => (
         <DoctorsCard
           key={doctor.id} //
-          name={doctor.email}
+          name={doctor.first_name}
           rating={doctor.reviews}
           specialty={doctor.categories ? doctor.categories : 'Urolog'}
           imageUrl={
