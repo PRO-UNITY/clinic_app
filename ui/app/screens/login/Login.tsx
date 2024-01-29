@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -11,10 +11,16 @@ import React from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { loginUser } from '../../services/auth/Auth';
 import { clearInputs } from '../../utils/clearInputs';
+import { showAsyncStorage } from '../../utils/showAsyncStorage';
+import { useIsFocused } from '@react-navigation/native';
 
 const Login = ({ navigation }: any) => {
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
+
+  // useEffect(() => {
+  //   AsyncStorage.clear();
+  // }, []);
 
   const handleLogin = () => {
     console.log('Login');
@@ -24,8 +30,17 @@ const Login = ({ navigation }: any) => {
     };
     loginUser(data)
       .then(async (res) => {
-        await AsyncStorage.setItem('token', res.access);
-        navigation.navigate('TabBar');
+        console.log(res);
+        await AsyncStorage.setItem('token', res.access)
+          .then(() => {
+            console.log('Token saved');
+            showAsyncStorage();
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+        // navigation.navigate('TabBar');
+        navigation.navigate('DoctorTabBar');
         clearInputs([setPhone, setPassword]);
       })
       .catch(() => {

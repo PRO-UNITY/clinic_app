@@ -62,7 +62,7 @@ const Chat = ({ route }: any) => {
     >
       <View style={styles.header}>
         <Text style={styles.headerText}>
-          Chat with {user.first_name ? user.first_name : user.phone}
+          Chat {user.first_name ? user.first_name : user.phone}
         </Text>
       </View>
 

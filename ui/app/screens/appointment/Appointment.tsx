@@ -97,7 +97,7 @@ const Appointment = ({ navigation, route }: any) => {
             doctor.status === 'IN_PROGRESS'
               ? '#FFC700'
               : doctor.status === 'IN_QUEUE'
-              ? '#00a8ff'
+              ? '##FFC700'
               : doctor.status === 'CANCELLED'
               ? '#e84118'
               : doctor.status === 'ONGOING'
@@ -105,8 +105,6 @@ const Appointment = ({ navigation, route }: any) => {
               : '#718093'
           }
           phone={doctor.phone ? doctor.phone : '998911234567'}
-          // navigation={navigation}
-          // screen={`AppointDoctor`}
           doctorId={doctor.id}
         />
       ))}

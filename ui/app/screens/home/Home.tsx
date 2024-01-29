@@ -15,19 +15,14 @@ const Home = ({ navigation }: any) => {
   useEffect(() => {
     getDoctors().then((res) => {
       setDoctors(res.results);
-      console.log(res.results);
     });
   }, []);
 
   const handleSearch = (text: string) => {
-    // const filteredDoctors = doctors.filter((doctor) =>
-    //   doctor.email.toLowerCase().includes(text.toLowerCase())
-    // );
     getFilteredDoctors(text).then((res: any) => {
       setDoctors(res.results);
       console.log(res.results);
     });
-    // setDoctors(filteredDoctors);
     setSearchQuery(text);
   };
 
