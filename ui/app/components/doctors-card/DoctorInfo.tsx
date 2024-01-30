@@ -17,9 +17,9 @@ const DoctorInfo: React.FC<Doctor> = ({
 }) => {
   const [isSaved, setIsSaved] = React.useState(false);
 
-  useEffect(() => {
-    console.log('isFavorite', isFavorite);
-  }, [isSaved]);
+  // useEffect(() => {
+  //   console.log('isFavorite', isFavorite);
+  // }, [isSaved]);
 
   const handleSaveDoctor = () => {
     const data = {

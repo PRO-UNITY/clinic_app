@@ -97,6 +97,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   contentText: {
-    color: '054A80',
+    color: '#054A80',
   },
 });

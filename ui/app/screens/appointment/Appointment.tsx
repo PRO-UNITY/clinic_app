@@ -13,8 +13,6 @@ const Appointment = ({ navigation, route }: any) => {
   const [doctors, setDoctors] = React.useState<any>([]);
   const [deletedDoctor, setDeletedDoctor] = React.useState<any>(null);
   const isFocused = useIsFocused();
-  console.log(route.key);
-  console.log(3);
 
   // get appointment doctors
   useEffect(() => {

@@ -13,6 +13,7 @@ import DoctorHome from '../../screens/doctor-screen/doctor-home/DoctorHome';
 import DoctorTabBar from '../../components/doctor-tabbar/DoctorTabBar';
 import DoctorAppointmentUser from '../../screens/doctor-screen/doctor-appointment-user/DoctorAppointmentUser';
 import DoctorCalendarAppointments from '../../screens/doctor-screen/doctor-calendar-appointments/DoctorCalendarAppointments';
+import Notification from '../../screens/notification/Notification';
 
 const Stack = createStackNavigator();
 
@@ -25,6 +26,7 @@ const DoctorNavigator = () => {
       <Stack.Screen name='Chat' component={Chat} />
       <Stack.Screen name='ChatList' component={ChatList} />
       <Stack.Screen name='DoctorHome' component={DoctorHome} />
+      <Stack.Screen name='Notification' component={Notification} />
       <Stack.Screen
         name='DoctorCalendarAppointments'
         component={DoctorCalendarAppointments}

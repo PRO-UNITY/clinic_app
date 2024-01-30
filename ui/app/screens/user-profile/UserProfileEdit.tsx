@@ -44,7 +44,6 @@ const UserProfileEdit = ({ route, navigation }: any) => {
       setGender(res.gender === 1 ? 'Male' : 'Female');
       setAddress(res.address);
       setAvatar(res.avatar);
-      console.log(res);
     });
   }, []);
 
@@ -71,7 +70,6 @@ const UserProfileEdit = ({ route, navigation }: any) => {
   };
 
   const handleSave = async () => {
-    console.log(selectedGender);
     try {
       const formData = new FormData();
       formData.append('first_name', firstName);
@@ -90,7 +88,6 @@ const UserProfileEdit = ({ route, navigation }: any) => {
         // @ts-ignore
         formData.append('avatar', avatarFile);
       }
-
       const updatedUser = await updateUserProfile(id, formData);
       navigation.navigate('User', { updatedUser });
     } catch (error) {
@@ -120,7 +117,7 @@ const UserProfileEdit = ({ route, navigation }: any) => {
         value={dateOfBirth}
         onChangeText={setDateOfBirth}
         placeholder='YYYY-MM-DD'
-        keyboardType='numeric' //
+        keyboardType='numeric'
       />
       <Text>Phone:</Text>
       <TextInput style={styles.input} value={phone} onChangeText={setPhone} />
@@ -134,7 +131,7 @@ const UserProfileEdit = ({ route, navigation }: any) => {
       {isPickerVisible && (
         <Picker
           selectedValue={gender}
-          onValueChange={(itemValue, itemIndex) => {
+          onValueChange={(itemValue) => {
             setSelectedGender(itemValue);
             setGender(itemValue === '1' ? 'Male' : 'Female');
             setPickerVisible(false);

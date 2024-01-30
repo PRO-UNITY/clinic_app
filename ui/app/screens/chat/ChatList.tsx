@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -8,57 +8,48 @@ import {
   Image,
 } from 'react-native';
 
+import { getChatRooms } from '../../services/chat/chat';
+
 const ChatList = ({ navigation }: any) => {
-  const usersData = [
-    {
-      id: '1',
-      name: 'John Doe',
-      lastMessage: 'Hello there!',
-      time: '10:30 AM',
-      avatar: {
-        uri: 'https://t3.ftcdn.net/jpg/02/99/04/20/360_F_299042079_vGBD7wIlSeNl7vOevWHiL93G4koMM967.jpg',
-      },
-    },
-    {
-      id: '2',
-      name: 'Jane Smith',
-      lastMessage: 'How are you?',
-      time: '11:45 AM',
-      avatar: {
-        uri: 'https://t3.ftcdn.net/jpg/02/99/04/20/360_F_299042079_vGBD7wIlSeNl7vOevWHiL93G4koMM967.jpg',
-      },
-    },
-    {
-      id: '3',
-      name: 'Bob Johnson',
-      lastMessage: 'Good morning!',
-      time: '9:15 AM',
-      avatar: {
-        uri: 'https://t3.ftcdn.net/jpg/02/99/04/20/360_F_299042079_vGBD7wIlSeNl7vOevWHiL93G4koMM967.jpg',
-      },
-    },
-  ];
+  const [chatRooms, setChatRooms] = useState([]);
+  const [page, setPage] = useState(1);
+
+  const fetchChatRooms = async () => {
+    const response = await getChatRooms(page);
+
+    const newChatRooms = response.results;
+    setChatRooms((prevChatRooms) =>
+      page === 1 ? newChatRooms : [...prevChatRooms, ...newChatRooms]
+    );
+    setPage((prevPage) => (response.next ? prevPage + 1 : prevPage));
+  };
+
+  useEffect(() => {
+    fetchChatRooms();
+  }, []);
 
   const renderUserItem = ({ item }: any) => (
     <TouchableOpacity
       style={styles.userItem}
       onPress={() => navigation.navigate('Chat', { userId: item.id })}
     >
-      <Image source={item.avatar} style={styles.avatar} />
+      <Image source={{ uri: item.initiator.avatar }} style={styles.avatar} />
       <View style={styles.userInfo}>
-        <Text style={styles.userName}>{item.name}</Text>
-        <Text style={styles.lastMessage}>{item.lastMessage}</Text>
+        <Text style={styles.userName}>{`${item.initiator.first_name} `}</Text>
+        <Text style={styles.lastMessage}>{item.last_message}</Text>
       </View>
-      <Text style={styles.time}>{item.time}</Text>
+      <Text style={styles.time}></Text>
     </TouchableOpacity>
   );
 
   return (
     <FlatList
-      data={usersData}
+      data={chatRooms}
       renderItem={renderUserItem}
-      keyExtractor={(item) => item.id}
+      keyExtractor={(item) => item}
       contentContainerStyle={styles.container}
+      onEndReached={fetchChatRooms}
+      onEndReachedThreshold={0.1}
     />
   );
 };

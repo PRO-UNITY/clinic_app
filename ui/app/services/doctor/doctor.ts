@@ -71,3 +71,11 @@ export const deleteSavedDoctor = async (id: number) => {
   const response = await api.delete(`/saved/${id}`);
   return response.data;
 };
+
+// accept appointment function
+export const statusAppointment = async (id: number, statusId: number) => {
+  const response = await api.patch(
+    `/appointment/get_appointments/${id}/?status_id=${statusId}`
+  );
+  return response.data;
+};

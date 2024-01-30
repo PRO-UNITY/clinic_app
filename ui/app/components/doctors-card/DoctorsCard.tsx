@@ -101,6 +101,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   phoneText: {
-    color: '054A80',
+    color: '#054A80',
   },
 });

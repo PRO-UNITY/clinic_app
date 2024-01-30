@@ -2,8 +2,13 @@ import { Alert, StyleSheet, Text, View } from 'react-native';
 import React, { useEffect } from 'react';
 import { getPatientById } from '../../../services/patient/patient';
 import PatientsCardInfo from '../../../components/patients-card/PatientCardInfo';
-import { greenColor, redColor, yellowColor } from '../../../utils/colors';
-import { cancelAppointment } from '../../../services/doctor/doctor';
+import {
+  blueColor,
+  greenColor,
+  redColor,
+  yellowColor,
+} from '../../../utils/colors';
+import { statusAppointment } from '../../../services/doctor/doctor';
 
 const DoctorAppointmentUser = ({ navigation, route }: any) => {
   const { patientId } = route.params;
@@ -11,33 +16,47 @@ const DoctorAppointmentUser = ({ navigation, route }: any) => {
 
   useEffect(() => {
     getPatientById(patientId).then((res: any) => {
-      console.log(res);
       setAppointmentData(res);
     });
   }, [patientId]);
 
-  const handleCancelAppointment = () => {
-    const handleRescheduleConfirmation = (doctorId: any) => {
-      const updateSchedule = true;
-      Alert.alert(
-        'Are you sure you want to reschedule the appointment?',
-        'Reschedule Confirmation',
-        [
-          {
-            text: 'Cancel',
-            style: 'cancel',
-          },
-          {
-            text: 'Yes',
-            onPress: () =>
-              navigation.navigate('AppointDoctor', {
-                doctorId,
-                updateSchedule,
-              }),
-          },
-        ]
-      );
-    };
+  const handleStatusAppointment = ({
+    patientId,
+    statusId,
+    alertMessage,
+  }: {
+    patientId: number;
+    statusId: number;
+    alertMessage: string;
+  }) => {
+    Alert.alert(
+      `Are you sure you want to ${alertMessage}?`,
+      `${alertMessage} Confirmation`,
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Yes',
+          onPress: () =>
+            statusAppointment(patientId, statusId).then((res) => {
+              if (statusId === 1) {
+                Alert.alert(
+                  'Appointment Canceled',
+                  'The appointment has been canceled.'
+                );
+              } else {
+                Alert.alert(
+                  'Appointment Accepted',
+                  'The appointment has been accepted.'
+                );
+              }
+              navigation.goBack();
+            }),
+        },
+      ]
+    );
   };
 
   return (
@@ -53,7 +72,13 @@ const DoctorAppointmentUser = ({ navigation, route }: any) => {
           time={appointmentData.timestamp}
           imageUrl={appointmentData.user.avatar}
           icon='ellipse'
-          iconColor={yellowColor}
+          iconColor={
+            appointmentData.status === 'ONGOING'
+              ? greenColor
+              : appointmentData.status === 'CANCELED'
+              ? redColor
+              : yellowColor
+          }
           gender={appointmentData.user.gender === 1 ? 'Male' : 'Female'}
           status={appointmentData.status}
           screen='AppointmentDetails'
@@ -62,12 +87,22 @@ const DoctorAppointmentUser = ({ navigation, route }: any) => {
           buttons={[
             {
               label: 'Accept',
-              onPress: () => navigation.navigate('Chat', { patientId }),
+              onPress: () =>
+                handleStatusAppointment({
+                  patientId: patientId,
+                  statusId: 2,
+                  alertMessage: 'accept the appointment',
+                }),
               color: greenColor,
             },
             {
               label: 'Cancel',
-              onPress: () => handleCancelAppointment,
+              onPress: () =>
+                handleStatusAppointment({
+                  patientId: patientId,
+                  statusId: 1,
+                  alertMessage: 'cancel the appointment',
+                }),
               color: redColor,
             },
           ]}

@@ -16,7 +16,7 @@ const DoctorTabBar = ({ navigation }: any) => {
       name: 'notifications-outline',
       color: '#000',
       size: 25,
-      screen: 'Appointment',
+      screen: 'Notification',
     },
   ];
 
