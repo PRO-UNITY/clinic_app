@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   StyleSheet,
   Text,
@@ -9,68 +9,120 @@ import {
   TouchableOpacity,
   FlatList,
 } from 'react-native';
-import { getDoctorById } from '../../services/doctor/doctor';
-import { mainColor } from '../../utils/colors';
+import {
+  blueColor,
+  grayColor,
+  mainColor,
+  yellowColor,
+} from '../../utils/colors';
+import {
+  getChatConversationById,
+  putChatConversationById,
+} from '../../services/chat/chat';
+import { clearInputs } from '../../utils/clearInputs';
 
 const Chat = ({ route }: any) => {
   const [user, setUser] = useState<any>({});
   const [messages, setMessages] = useState<any[]>([]);
   const [inputText, setInputText] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
+  const [loadingNextPage, setLoadingNextPage] = useState<boolean>(false); // New s
+  const pageRef = useRef<number>(1);
 
   useEffect(() => {
-    const initialMessages = [
-      { id: '1', text: 'Hello!', sender: 'doctor' },
-      { id: '2', text: 'Hi there!', sender: 'user' },
-    ];
-    setMessages(initialMessages);
-  }, []);
+    getChatConversationById(route.params.userId, pageRef.current).then(
+      (res: any) => {
+        console.log(res);
+        setMessages(res.results);
+      }
+    );
+  }, [route.params.userId]);
 
-  useEffect(() => {
-    getDoctorById(route.params.doctorId).then((res: any) => setUser(res));
-  }, []);
-
-  const handleSendMessage = () => {
-    if (inputText.trim() === '') return;
-
-    const newMessage = {
-      id: String(messages.length + 1),
-      text: inputText,
-      sender: 'user',
-    };
-
-    setMessages([...messages, newMessage]);
-    setInputText('');
+  const loadNextPage = async () => {
+    if (loading || loadingNextPage) return;
+    setLoadingNextPage(true);
+    try {
+      const nextPage = pageRef.current + 1;
+      const response = await getChatConversationById(
+        route.params.userId,
+        nextPage
+      );
+      if (response.next === null) {
+        console.log('End of Chat');
+        return;
+      } else {
+        const newMessages = response.results.filter((newMessage: any) => {
+          return !messages.some(
+            (existingMessage) => existingMessage.id === newMessage.id
+          );
+        });
+        setMessages((prevMessages) => [...prevMessages, ...newMessages]);
+        pageRef.current = nextPage;
+      }
+    } catch (error) {
+      return;
+    } finally {
+      setLoadingNextPage(false);
+    }
   };
 
-  const renderMessage = ({ item }: { item: any }) => (
-    <View
-      style={[
-        styles.messageContainer,
-        item.sender === 'user' ? styles.userMessage : styles.doctorMessage,
-      ]}
-    >
-      <Text style={styles.messageText}>{item.text}</Text>
-    </View>
-  );
+  const handleSendMessage = () => {
+    const newMessage = {
+      text: inputText,
+    };
+    setMessages((prevMessages) => [newMessage, ...prevMessages]);
+    putChatConversationById(route.params.userId, newMessage);
+    clearInputs([setInputText]);
+  };
+
+  const renderMessage = ({ item }: { item: any }) => {
+    const isSenderDoctor = item.sender_type === 'doctor';
+    const isSenderPatient = item.sender_type === 'patient';
+
+    return (
+      <View
+        style={[
+          styles.messageContainer,
+          isSenderDoctor ? styles.doctorMessage : styles.userMessage,
+          isSenderPatient ? styles.patientMessage : styles.userMessage,
+        ]}
+      >
+        <Text style={styles.messageText}>{item.text}</Text>
+      </View>
+    );
+  };
+
+  const reversedMessages = [...messages].reverse();
 
   return (
     <KeyboardAvoidingView
       style={styles.container}
-      // @ts-ignore
-      behavior={Platform.OS === 'ios' ? 'padding' : null}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 85 : 0}
     >
       <View style={styles.header}>
         <Text style={styles.headerText}>
-          Chat with {user.first_name ? user.first_name : user.phone}
+          Chat {user.first_name ? user.first_name : user.phone}
         </Text>
       </View>
 
       <FlatList
-        data={messages}
+        data={reversedMessages}
         renderItem={renderMessage}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item, index) =>
+          item.id ? item.id.toString() : index.toString()
+        }
         contentContainerStyle={styles.contentContainer}
+        onEndReachedThreshold={0.5}
+        onMomentumScrollEnd={({ nativeEvent }) => {
+          const reachedEnd =
+            nativeEvent.layoutMeasurement.height +
+              nativeEvent.contentOffset.y >=
+            nativeEvent.contentSize.height;
+          if (reachedEnd) {
+            loadNextPage();
+          }
+        }}
       />
 
       <View style={styles.inputContainer}>
@@ -109,7 +161,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   contentContainer: {
-    flex: 1,
     padding: 10,
   },
   messageContainer: {
@@ -120,14 +171,19 @@ const styles = StyleSheet.create({
   },
   userMessage: {
     alignSelf: 'flex-end',
-    backgroundColor: mainColor,
+    backgroundColor: yellowColor,
+  },
+  patientMessage: {
+    alignSelf: 'flex-start',
+    backgroundColor: grayColor,
   },
   doctorMessage: {
-    alignSelf: 'flex-start',
-    backgroundColor: '#95a5a6',
+    alignSelf: 'flex-end',
+    backgroundColor: blueColor,
   },
   messageText: {
     color: 'white',
+    fontWeight: 'bold',
   },
   inputContainer: {
     flexDirection: 'row',

@@ -72,7 +72,7 @@ const Profile = ({ navigation, route }: any) => {
         }}
         style={styles.avatar}
       />
-      <Text style={styles.titleHead}>Patient</Text>
+      <Text style={styles.titleHead}>{user.role}</Text>
 
       <FlatList
         data={data}

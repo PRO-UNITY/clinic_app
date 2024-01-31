@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -11,21 +11,38 @@ import React from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { loginUser } from '../../services/auth/Auth';
 import { clearInputs } from '../../utils/clearInputs';
+import { showAsyncStorage } from '../../utils/showAsyncStorage';
+import { useIsFocused } from '@react-navigation/native';
+import { getUserProfile } from '../../services/user/user';
 
 const Login = ({ navigation }: any) => {
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLogin = () => {
-    console.log('Login');
     const data = {
       phone,
       password,
     };
     loginUser(data)
       .then(async (res) => {
-        await AsyncStorage.setItem('token', res.access);
-        navigation.navigate('TabBar');
+        await AsyncStorage.setItem('token', res.access)
+          .then(() => {
+            getUserProfile().then(async (res) => {
+              await AsyncStorage.setItem('role', res.role).then(() => {
+                showAsyncStorage();
+                const userRole = res.role;
+                if (userRole === 'patient') {
+                  navigation.navigate('TabBar');
+                } else if (userRole === 'doctor') {
+                  navigation.navigate('DoctorTabBar');
+                }
+              });
+            });
+          })
+          .catch((err) => {
+            console.log(err);
+          });
         clearInputs([setPhone, setPassword]);
       })
       .catch(() => {

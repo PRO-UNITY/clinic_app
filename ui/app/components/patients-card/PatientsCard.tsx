@@ -1,55 +1,47 @@
+import {
+  StyleSheet,
+  Text,
+  View,
+  Platform,
+  Image,
+  Pressable,
+} from 'react-native';
 import React from 'react';
-import { StyleSheet, Text, View, Platform, Image } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { PatientsCardProps } from '../../types/Patient/PatientCard';
 
-interface CardProps {
-  name?: string;
-  specialty?: string;
-  rating?: number;
-  imageUrl?: string;
-  phone?: string;
-  icon?: string;
-  iconColor?: any;
-  navigation?: any;
-  screen?: string;
-  doctorId?: any;
-}
-
-const DoctorsCard: React.FC<CardProps> = ({
+const PatientsCard: React.FC<PatientsCardProps> = ({
+  first_name,
+  content,
   imageUrl,
-  name,
-  rating,
-  specialty,
-  phone,
   icon,
   iconColor,
-  navigation,
+  gender,
+  status,
   screen,
-  doctorId,
+  navigation,
+  patientId,
 }) => {
   return (
-    <TouchableOpacity onPress={() => navigation.navigate(screen, { doctorId })}>
+    <Pressable onPress={() => navigation.navigate(screen, { patientId })}>
       <View style={styles.container}>
         {imageUrl && <Image source={{ uri: imageUrl }} style={styles.image} />}
         <View style={styles.textContainer}>
-          <Text style={styles.nameText}>dr. {name}</Text>
-          <Text style={styles.phoneText}>{phone}</Text>
-
+          <Text style={styles.nameText}>Name: {first_name}</Text>
+          <Text style={styles.contentText}>{content}</Text>
           <View style={styles.ratingContainer}>
             {/* @ts-ignore */}
             <Icon name={icon} style={[styles.starIcon, { color: iconColor }]} />
-            <Text style={styles.ratingText}>{rating}</Text>
-            <Text style={styles.ratingText}>{specialty}</Text>
+            <Text style={styles.statusText}>{status}</Text>
+            <Text style={styles.genderText}>{gender}</Text>
           </View>
         </View>
       </View>
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 
-export default DoctorsCard;
-
+export default PatientsCard;
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
@@ -87,7 +79,11 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     gap: 8,
   },
-  ratingText: {
+  statusText: {
+    fontSize: 14,
+    color: '#404446',
+  },
+  genderText: {
     fontSize: 14,
     color: '#404446',
   },
@@ -100,7 +96,7 @@ const styles = StyleSheet.create({
   starIcon: {
     fontSize: 16,
   },
-  phoneText: {
+  contentText: {
     color: '#054A80',
   },
 });

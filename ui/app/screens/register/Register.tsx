@@ -26,7 +26,6 @@ const Register = ({ navigation }: any) => {
       })
       .catch((err) => {
         console.log(err);
-        console.log(data);
       });
   };
 

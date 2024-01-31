@@ -11,7 +11,6 @@ const ForgotPassword = ({ navigation }: any) => {
   const [phone, setPhone] = useState('');
 
   const handleForgotPassword = () => {
-    console.log('Phone for password reset:', phone);
     navigation.navigate('Verification');
   };
 

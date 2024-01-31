@@ -89,7 +89,6 @@ const Categories = ({ navigation }: any) => {
   const [searchText, setSearchText] = React.useState<string>('');
   const [categories, setCategories] = React.useState<any[]>([]);
   const route = useRoute();
-  console.log(route);
 
   useEffect(() => {
     getCategories().then((res: any) => {
