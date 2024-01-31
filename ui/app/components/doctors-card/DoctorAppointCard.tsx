@@ -4,6 +4,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { mainColor } from '../../utils/colors';
 import moment from 'moment';
+import { getChatAppointment } from '../../services/chat/chat';
 
 interface CardProps {
   name?: string;
@@ -31,7 +32,6 @@ const DoctorAppointCard: React.FC<CardProps> = ({
   icon,
   iconColor,
   navigation,
-  // screen,
   doctorId,
   date,
   time,
@@ -39,19 +39,25 @@ const DoctorAppointCard: React.FC<CardProps> = ({
   onCancelConfirmation,
   onRescheduleAppointment,
 }) => {
+  const goToChat = () => {
+    console.log('hello');
+
+    getChatAppointment(doctorId)
+      .then((res) => {
+        console.log(res);
+        navigation.navigate('Chat', { userId: res.id });
+      })
+      .catch((err) => console.log(err));
+  };
+
   return (
-    <TouchableOpacity
-    //  onPress={() => navigation.navigate(screen, { doctorId })}
-    >
+    <TouchableOpacity>
       <View style={styles.main}>
         <View style={styles.cardTitle}>
           <Text style={styles.textTitle}>Doctor</Text>
           <View style={styles.iconsContainer}>
-            {status === 'IN_PROGRESS' && (
-              <TouchableOpacity
-                onPress={() => navigation.navigate('Chat', { doctorId })}
-                style={styles.chatButton}
-              >
+            {status === 'IN_QUEUE' && (
+              <TouchableOpacity onPress={goToChat} style={styles.chatButton}>
                 <Icon name='chatbox' size={16} color='white' />
               </TouchableOpacity>
             )}

@@ -11,12 +11,17 @@ import { getUserProfile } from '../../services/user/user';
 import { mainColor } from '../../utils/colors';
 import ProfileListItem from '../../components/profile-list-item/ProfileListItem';
 import { BASE_URL } from '../../utils';
+import { useIsFocused } from '@react-navigation/native';
 
 const Profile = ({ navigation, route }: any) => {
   const [user, setUser] = React.useState<any>({});
+  const isFocused = useIsFocused();
 
   useEffect(() => {
     const updatedUser = route.params?.updatedUser;
+    console.log(route.params?.updatedUser);
+    console.log('route.params?.updatedUser');
+
     if (updatedUser) {
       setUser(updatedUser);
       console.log(updatedUser);
@@ -25,12 +30,12 @@ const Profile = ({ navigation, route }: any) => {
         setUser(res);
       });
     }
-  }, [route.params?.updatedUser]);
+  }, [route.params?.updatedUser, isFocused]);
 
   const data = [
     {
       label: 'First name',
-      value: user?.first_name ? user.first_name : 'JohnDoe',
+      value: user?.first_name ? user.first_name : 'No name',
     },
     {
       label: 'Last name',
@@ -42,21 +47,12 @@ const Profile = ({ navigation, route }: any) => {
     },
     {
       label: 'Email',
-      value: user?.email ? user.email : 'john.doe@example.com',
+      value: user?.email ? user.email : 'no_email@example.com',
     },
     { label: 'Phone', value: user?.phone ? user.phone : '998901234567' },
     {
       label: 'Gender',
-      value:
-        user?.gender === 1
-          ? 'Male'
-          : user?.gender === 2
-          ? 'Female'
-          : 'No selected Gender',
-    },
-    {
-      label: 'Address',
-      value: user?.address ? user.address : 'No address',
+      value: user?.gender,
     },
   ];
 
@@ -81,7 +77,6 @@ const Profile = ({ navigation, route }: any) => {
         )}
         keyExtractor={(item) => item.label}
       />
-
       <TouchableOpacity
         onPress={() => navigation.navigate('UserEdit', { user })}
         style={styles.editButton}

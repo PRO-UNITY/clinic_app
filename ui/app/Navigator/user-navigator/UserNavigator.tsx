@@ -14,6 +14,7 @@ import UserProfileEdit from '../../screens/user-profile/UserProfileEdit';
 import Chat from '../../screens/chat/Chat';
 import ChatList from '../../screens/chat/ChatList';
 import SavedDoctors from '../../screens/doctors/SavedDoctors';
+import Notification from '../../screens/notification/Notification';
 
 const Stack = createStackNavigator();
 
@@ -29,6 +30,7 @@ const AppNavigator = () => {
       <Stack.Screen name='Chat' component={Chat} />
       <Stack.Screen name='ChatList' component={ChatList} />
       <Stack.Screen name='SavedDoctors' component={SavedDoctors} />
+      <Stack.Screen name='Notification' component={Notification} />
       <Stack.Screen
         name='Welcome'
         component={Welcome}

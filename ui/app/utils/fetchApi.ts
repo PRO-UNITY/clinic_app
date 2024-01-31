@@ -10,29 +10,23 @@ const api = axios.create({
 api.interceptors.request.use(
   async (config) => {
     const authToken = await AsyncStorage.getItem('token');
-    console.log('authToken', authToken);
-
     if (authToken) {
       config.headers.Authorization = `Bearer ${authToken}`;
     }
-
     return config;
   },
   (error) => {
     return Promise.reject(error);
   }
 );
-
 api.interceptors.response.use(
   (response) => {
     return response;
   },
   async (error) => {
     if (error.response && error.response.status === 401) {
-      navigateToLoginPage('Login');
+      navigateToLoginPage();
     }
-
-    return Promise.reject(error);
   }
 );
 export default api;

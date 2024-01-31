@@ -1,14 +1,16 @@
 import { Alert, StyleSheet, Text, View } from 'react-native';
 import React, { useEffect } from 'react';
-import { getPatientById } from '../../../services/patient/patient';
+
 import PatientsCardInfo from '../../../components/patients-card/PatientCardInfo';
+
+import { getPatientById } from '../../../services/patient/patient';
+import { statusAppointment } from '../../../services/doctor/doctor';
 import {
   blueColor,
   greenColor,
   redColor,
   yellowColor,
 } from '../../../utils/colors';
-import { statusAppointment } from '../../../services/doctor/doctor';
 
 const DoctorAppointmentUser = ({ navigation, route }: any) => {
   const { patientId } = route.params;
@@ -74,9 +76,11 @@ const DoctorAppointmentUser = ({ navigation, route }: any) => {
           icon='ellipse'
           iconColor={
             appointmentData.status === 'ONGOING'
-              ? greenColor
+              ? blueColor
               : appointmentData.status === 'CANCELED'
               ? redColor
+              : appointmentData.status === 'COMPLETED'
+              ? greenColor
               : yellowColor
           }
           gender={appointmentData.user.gender === 1 ? 'Male' : 'Female'}

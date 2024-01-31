@@ -1,32 +1,29 @@
 import { StyleSheet, Text, View } from 'react-native';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Calendar } from 'react-native-calendars';
 import { mainColor } from '../../../utils/colors';
-
-const customMarkedDates = {
-  '2024-01-10': {
-    selected: true,
-    selectedColor: 'red',
-    selectedTextColor: 'white',
-  },
-  '2024-01-26': {
-    selected: true,
-    selectedColor: 'red',
-    selectedTextColor: 'white',
-  },
-  '2024-01-28': {
-    selected: true,
-    selectedColor: 'red',
-    selectedTextColor: 'white',
-  },
-};
+import { formatBusyDaysToMarkedDates } from '../../../utils/dates';
+import { getPatients } from '../../../services/patient/patient';
+import { useIsFocused } from '@react-navigation/native';
 
 const DoctorCalendarAppointments = () => {
+  const [markedDates, setMarkedDates] = React.useState<any>([]);
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
+    getPatients().then((res: any) => {
+      if (res.busy_days && res.busy_days.length > 0) {
+        const markedDatesData = formatBusyDaysToMarkedDates(res.busy_days);
+        setMarkedDates(markedDatesData);
+      }
+    });
+  }, [isFocused]);
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Doctor Work Calendar</Text>
       <Calendar
-        markedDates={customMarkedDates}
+        markedDates={markedDates}
         disableAllTouchEventsForDisabledDays={true}
       />
     </View>

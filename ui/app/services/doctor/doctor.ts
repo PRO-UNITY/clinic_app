@@ -2,8 +2,13 @@ import { BASE_URL } from '../../utils';
 import api from '../../utils/fetchApi';
 
 // get doctors
-export const getDoctors = async () => {
-  const response = await api.get(`${BASE_URL}/doctors`);
+// export const getDoctors = async () => {
+//   const response = await api.get(`${BASE_URL}/doctors`);
+//   return response.data;
+// };
+
+export const getDoctors = async (page: number) => {
+  const response = await api.get(`${BASE_URL}/doctors/?page=${page}`);
   return response.data;
 };
 
@@ -32,9 +37,8 @@ export const getDoctorsByCategory = async (id: number) => {
 };
 
 //cancel appointment function
-export const cancelAppointment = async (id: number) => {
-  const response = await api.delete(`/appointment/get_appointments/${id}`);
-  return response.data;
+export const cancelAppointment = async (id?: number) => {
+  api.delete(`/appointment/get_appointments/${id}/`);
 };
 
 // reschedule appointment function with api
@@ -43,7 +47,7 @@ export const rescheduleAppointment = async (id: number, data: any) => {
   return response.data;
 };
 
-// get filtered doctors by query
+// // get filtered doctors by query
 export const getFilteredDoctors = async (query: string) => {
   const queryParts = query.split(' ');
   const queryParams: any = {};
@@ -73,7 +77,10 @@ export const deleteSavedDoctor = async (id: number) => {
 };
 
 // accept appointment function
-export const statusAppointment = async (id: number, statusId: number) => {
+export const statusAppointment = async (
+  id: number | object,
+  statusId: number
+) => {
   const response = await api.patch(
     `/appointment/get_appointments/${id}/?status_id=${statusId}`
   );

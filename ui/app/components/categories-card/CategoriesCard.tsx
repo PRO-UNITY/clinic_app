@@ -1,7 +1,6 @@
 import { StyleSheet, Text, View, Image, Platform } from 'react-native';
 import React from 'react';
 import { Category } from '../../types/Category';
-import { mainColor } from '../../utils/colors';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const CategoriesCard: React.FC<Category> = ({

@@ -1,24 +1,37 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import UserProfile from '../../screens/user-profile/UserProfile';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { StyleSheet, View } from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
 import HeaderTitle from '../header/HeaderTitle';
 
 import DoctorHome from '../../screens/doctor-screen/doctor-home/DoctorHome';
 import DoctorCalendarAppointments from '../../screens/doctor-screen/doctor-calendar-appointments/DoctorCalendarAppointments';
+import { getNotifications } from '../../services/notification/notification';
+import { redColor } from '../../utils/colors';
 const Tab = createBottomTabNavigator();
 
 const DoctorTabBar = ({ navigation }: any) => {
+  const [notifications, setNotifications] = React.useState<any[]>([]);
+  const isFocused = useIsFocused();
   const headersTitleIcons = [
     { name: 'chatbox-outline', color: '#000', size: 25, screen: 'ChatList' },
     {
-      name: 'notifications-outline',
-      color: '#000',
+      name:
+        notifications.length > 0 ? 'notifications' : 'notifications-outline',
+      color: notifications.length > 0 ? redColor : '#000',
       size: 25,
       screen: 'Notification',
     },
   ];
+
+  useEffect(() => {
+    getNotifications(1).then((res: any) => {
+      console.log(res);
+      setNotifications(res.results);
+    });
+  }, [isFocused]);
 
   return (
     <Tab.Navigator

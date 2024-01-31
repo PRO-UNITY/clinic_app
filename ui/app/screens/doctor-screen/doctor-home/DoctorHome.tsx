@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View, FlatList } from 'react-native';
 import { Calendar } from 'react-native-calendars';
+import { useIsFocused } from '@react-navigation/native';
 
 import {
   getPatients,
@@ -9,36 +10,31 @@ import {
 import { Patient } from '../../../types/Patient/Patient';
 import PatientsCard from '../../../components/patients-card/PatientsCard';
 import {
+  blueColor,
   greenColor,
   mainColor,
   redColor,
   yellowColor,
 } from '../../../utils/colors';
-
-const customMarkedDates = {
-  '2024-01-01': {
-    selected: true,
-    selectedColor: greenColor,
-    selectedTextColor: 'white',
-  },
-  '2024-01-27': {
-    selected: true,
-    selectedColor: greenColor,
-    selectedTextColor: 'white',
-  },
-};
+import { formatBusyDaysToMarkedDates } from '../../../utils/dates';
 
 const DoctorHome = ({ navigation }: any) => {
   const [date, setDate] = useState(new Date());
   const [showCalendar, setShowCalendar] = useState(false);
   const [filtered, setFiltered] = useState(false);
   const [patients, setPatients] = useState<Patient[]>([]);
+  const [markedDates, setMarkedDates] = useState<any>([]);
+  const isFocused = useIsFocused();
 
   useEffect(() => {
     getPatients().then((res) => {
-      setPatients(res.results);
+      setPatients(res.data.results);
+      if (res.busy_days && res.busy_days.length > 0) {
+        const markedDatesData = formatBusyDaysToMarkedDates(res.busy_days);
+        setMarkedDates(markedDatesData);
+      }
     });
-  }, [date]);
+  }, [date, isFocused]);
 
   const showCalendarHandler = () => {
     setShowCalendar(!showCalendar);
@@ -48,15 +44,16 @@ const DoctorHome = ({ navigation }: any) => {
     setShowCalendar(false);
     setFiltered(true);
     getPatientsByDate(day.dateString).then((res: any) => {
-      setPatients(res.results);
+      console.log(res);
+
+      setPatients(res.data.results);
     });
   };
 
   const clearFilter = () => {
     setFiltered(false);
-
     getPatients().then((res) => {
-      setPatients(res.results);
+      setPatients(res.data.results);
     });
   };
 
@@ -66,14 +63,19 @@ const DoctorHome = ({ navigation }: any) => {
       key={item.id}
       id={item.id}
       content={item.content}
-      gender={item.user.gender}
       imageUrl={item.user.avatar}
       icon='ellipse'
       iconColor={
         item.status === 'ONGOING'
-          ? greenColor
+          ? blueColor
           : item.status === 'CANCELED'
           ? yellowColor
+          : item.status === 'COMPLETED'
+          ? greenColor
+          : item.status === 'IN_QUEUE'
+          ? yellowColor
+          : item.status === 'IN_PROGRESS'
+          ? blueColor
           : redColor
       }
       status={item.status}
@@ -94,7 +96,7 @@ const DoctorHome = ({ navigation }: any) => {
           {showCalendar ? (
             <Text style={styles.showCalendarButtonText}>Hide Calendar</Text>
           ) : (
-            <Text style={styles.showCalendarButtonText}>Show Calendar</Text>
+            <Text style={styles.showCalendarButtonText}>Search by date</Text>
           )}
         </Pressable>
 
@@ -102,7 +104,7 @@ const DoctorHome = ({ navigation }: any) => {
           <View style={styles.calendarContainer}>
             <Calendar
               style={styles.calendar}
-              markedDates={customMarkedDates}
+              markedDates={markedDates}
               onDayPress={handleDayPress}
               theme={{
                 arrowColor: mainColor,
