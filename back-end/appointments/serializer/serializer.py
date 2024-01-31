@@ -1,27 +1,11 @@
 import datetime
-
-from django.db.models import Avg
-from django.utils import timezone
 from rest_framework import serializers
-from rest_framework.validators import UniqueValidator
-from django.contrib.auth import get_user_model, authenticate
-from django.contrib.auth.models import Group
-from django.contrib.auth.password_validation import validate_password
-from django.core.exceptions import ObjectDoesNotExist
-from eskiz_sms.exceptions import BadRequest
-from django.contrib.auth.backends import ModelBackend
-
 from authentification.models import (
-    Gender,
     CustomUser,
-    Categories,
-    SmsHistory, ReviewDoctors,
-    MakeAppointments
+    MakeAppointments, Notification
 )
-from authentification.services.get_role import get_role, get_gender
-from authentification.services.generate_code import generate_sms_code, generate_password
-from authentification.services.send_sms import send_sms
-from hospital.serializer.serializer import HospitalSerializer
+from appointments.services.services import create_notification
+
 
 
 
@@ -61,6 +45,7 @@ class MakeAppointmentsSerializer(serializers.ModelSerializer):
 
         make_appointments = MakeAppointments.objects.create(doctor=doctor, user=user, timestamp=timestamp,
                                                             **validated_data)
+        create_notification('PATIENT_SENT_APPOINTMENT', make_appointments, self.context['request'])
         return make_appointments
 
 
@@ -68,10 +53,8 @@ class MakeAppointmentsSerializer(serializers.ModelSerializer):
         date_data = validated_data.pop('date')
         time_data = validated_data.pop('time')
         doctor = validated_data.pop('doctor')
-        print(doctor)
-
+        user = self.context['request'].user
         timestamp = datetime.datetime.combine(date_data, time_data)
-        print(timestamp)
         check_doctor = MakeAppointments.objects.filter(doctor=doctor, timestamp=timestamp).exists()
         if check_doctor:
             raise serializers.ValidationError({'msg': "Doctor is busy at this time"})
@@ -80,6 +63,7 @@ class MakeAppointmentsSerializer(serializers.ModelSerializer):
         instance.doctor = doctor
         instance.content = validated_data.get('content', instance.content)
         instance.save()
+        create_notification('PATIENT_SENDING_BACK_APPOINTMENT', instance, self.context['request'])
         return instance
 
 

@@ -46,6 +46,7 @@ urlpatterns = [
     path('auth', include('authentification.urls')),
     path('hospital', include('hospital.urls')),
     path('review/', include('rating.urls')),
+    path('chat/', include('chat.urls')),
     path('appointment/', include('appointments.urls')),
     path('profile', views.ProfileViews.as_view()),
     path('profile/<int:pk>', views.CustomUserDetailsViews.as_view()),
@@ -56,6 +57,8 @@ urlpatterns = [
     path('saved', views.SavedDoctorsView.as_view()),
     path('saved/<int:pk>', views.SavedDoctorsDetailView.as_view()),
     path('gender', views.GenderView.as_view()),
+    path('notification/', views.NotificationView.as_view()),
+    path('notification/<int:pk>/', views.NotificationDetailsView.as_view()),
 ]
 
 

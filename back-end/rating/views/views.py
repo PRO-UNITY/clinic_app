@@ -1,21 +1,15 @@
-from django.contrib.auth import authenticate
-from django.shortcuts import get_object_or_404, redirect, reverse
-from django.db.models import Q
-from rest_framework import status
+from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from main_services.main import get_token_for_user, UserRenderers, PaginationMethod
+from main_services.main import UserRenderers, PaginationMethod
 from main_services.pagination import StandardResultsSetPagination
 from main_services.responses import (
     bad_request_response,
     success_response,
     success_created_response,
-    user_not_found_response,
     unauthorized_response, success_deleted_response
 )
-from main_services.swaggers import swagger_extend_schema, swagger_schema
 from main_services.expected_fields import check_required_key
 from rating.serializers.serializer import ReviewDoctorsSerializer, ReviewDoctorsCreateSerializer
 from authentification.models import ReviewDoctors

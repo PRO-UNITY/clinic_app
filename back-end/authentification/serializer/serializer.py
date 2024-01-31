@@ -56,15 +56,12 @@ class CategoriesSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         representation = super().to_representation(instance)
 
-        # Access the request from the serializer context
         request = self.context.get('request')
 
         if 'doctors_set' in representation:
             for doctor in representation['doctors_set']:
                 if 'avatar' in doctor and doctor['avatar']:
-                    # Build absolute URI for avatar
                     doctor['avatar'] = request.build_absolute_uri('/media/' + doctor['avatar'])
-
         return representation
 
     def create(self, validated_data):

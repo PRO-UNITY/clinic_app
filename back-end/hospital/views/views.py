@@ -1,23 +1,13 @@
-
-from django.contrib.auth import authenticate
-from django.shortcuts import get_object_or_404, redirect, reverse
-from django.db.models import Q
-from rest_framework import status
+from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from authentification.models import Hospital
-from authentification.serializer.serializer import (
-    CustomUserListSerializer,
-    SendSmsCodeSerializer
-)
-from main_services.main import get_token_for_user, UserRenderers
+from main_services.main import UserRenderers
 from main_services.responses import (
     bad_request_response,
     success_response,
     success_created_response,
-    user_not_found_response,
     unauthorized_response
 )
 from hospital.serializer.serializer import HospitalSerializer, HospitalCreateSerializer

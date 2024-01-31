@@ -10,13 +10,13 @@ from authentification.models import (
     Hospital,
     ReviewDoctors,
     MakeAppointments,
-    SavedDoctors
+    SavedDoctors, Notification
 )
 
 
 class CustomUserAdmin(ImportExportModelAdmin, UserAdmin):
     model = CustomUser
-    list_display = ['email', 'phone', 'is_active', 'is_staff']
+    list_display = ['email', 'phone', 'is_active', 'is_staff',]
     search_fields = ['email', 'phone']
     ordering = ['email']
     fieldsets = (
@@ -62,3 +62,4 @@ admin.site.register(SmsHistory)
 admin.site.register(Hospital, HospitalAdmin)
 admin.site.register(ReviewDoctors, ReviewDoctorsAdmin)
 admin.site.register(SavedDoctors)
+admin.site.register(Notification)

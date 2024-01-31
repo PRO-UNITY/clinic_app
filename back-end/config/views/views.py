@@ -1,9 +1,9 @@
-from django.shortcuts import get_object_or_404, redirect, reverse
+from django.shortcuts import get_object_or_404
 from django.db.models import Q
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
-from authentification.models import CustomUser, SavedDoctors, Gender
+from authentification.models import CustomUser, SavedDoctors, Gender, Notification
 from authentification.serializer.serializer import (
     CustomUserListSerializer,
     RegisterSerializer,
@@ -15,8 +15,7 @@ from main_services.responses import (
     bad_request_response,
     success_response,
     success_created_response,
-    user_not_found_response,
-    unauthorized_response, success_deleted_response
+    success_deleted_response
 )
 from main_services.swaggers import swagger_extend_schema, swagger_schema
 from main_services.expected_fields import check_required_key
@@ -29,7 +28,15 @@ from config.serializer.serializer import (
     SavedDoctorsSerializer,
     SavedDoctorsDetailSerializer
 )
-
+from main_services.roles import (
+    custom_user_has_patient_role,
+    custom_user_has_doctor_role
+)
+from chat.utils.serializers import NotificationSerializer
+from appointments.services.services import (
+    filter_by_patient_notification,
+    filter_by_doctor_notification
+)
 
 class GenderView(APIView):
     def get(self, request):
@@ -164,3 +171,38 @@ class SavedDoctorsDetailView(APIView):
         queryset = get_object_or_404(SavedDoctors, pk=pk)
         queryset.delete()
         return success_deleted_response("Deleted")
+
+
+class NotificationView(APIView, PaginationMethod):
+    permission_classes = [IsAuthenticated]
+    render_classes = [UserRenderers]
+    pagination_class = StandardResultsSetPagination
+
+    def get(self, request):
+        if custom_user_has_doctor_role(request.user):
+            notification = Notification.objects.select_related('appointments').filter(
+                appointments__doctor=request.user, is_seen=False
+            )
+            notification = filter_by_doctor_notification(notification)
+            serializer = super().page(notification, NotificationSerializer, request)
+            return success_response(serializer.data)
+        if custom_user_has_patient_role(request.user):
+            notification = Notification.objects.select_related('appointments').filter(appointments__user=request.user, is_seen=False
+            )
+            notification = filter_by_patient_notification(notification)
+            serializer = super().page(notification, NotificationSerializer, request)
+            return success_response(serializer.data)
+
+        return success_response('No Notification')
+
+
+class NotificationDetailsView(APIView):
+    permission_classes = [IsAuthenticated]
+    render_classes = [UserRenderers]
+
+    def get(self, request, pk):
+        queryset = get_object_or_404(Notification, pk=pk)
+        queryset.is_seen = True
+        queryset.save()
+        serializer = NotificationSerializer(queryset)
+        return success_response(serializer.data)

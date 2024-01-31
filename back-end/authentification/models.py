@@ -163,37 +163,43 @@ class SavedDoctors(models.Model):
         verbose_name = "Saved Doctor"
         verbose_name_plural = "Saved Doctors"
 
-#
-# NOTIFICATION_TYPES = (
-#     ('USER_APPLIED_SEND_REQUEST', 'APPLIED_SEND_REQUEST'),
-#     ('HR_ACCEPTED_SEND_REQUEST', 'ACCEPTED_SEND_REQUEST'),
-#     ('HR_REJECTED_SEND_REQUEST', 'REJECTED_SEND_REQUEST'),
-#     ('MESSAGE_SENT', 'MESSAGE_SENT'),
-# )
-#
-#
-# class Notification(models.Model):
-#     notification_type = models.CharField(max_length=255, choices=NOTIFICATION_TYPES)
-#     appointments = models.ForeignKey(
-#         MakeAppointments,
-#         on_delete=models.CASCADE,
-#         null=True,
-#         blank=True,
-#         related_name='notificationAppointments'
-#     )
-#     is_seen = models.BooleanField(default=False, null=True, blank=True)
-#
-#     user = models.ForeignKey(
-#         settings.AUTH_USER_MODEL,
-#         on_delete=models.CASCADE,
-#         null=True,
-#         blank=True,
-#         related_name="notificationCustomUser",
-#     )
-#     created_at = models.DateField(auto_now_add=True, null=True, blank=True)
-#
-#
-#     class Meta:
-#         db_table = "table_notification"
-#         verbose_name = "Notification"
-#         verbose_name_plural = "Notification"
+
+NOTIFICATION_TYPES = (
+    ('PATIENT_SENT_APPOINTMENT', 'PATIENT_SENT_APPOINTMENT'),
+    ('PATIENT_CANCELLED_APPOINTMENT', 'PATIENT_CANCELLED_APPOINTMENT'),
+    ('PATIENT_SENDING_BACK_APPOINTMENT', 'PATIENT_SENDING_BACK_APPOINTMENT'),
+    ('DOCTOR_CONFIRMED_APPOINTMENT', 'DOCTOR_CONFIRMED_APPOINTMENT'),
+    ('DOCTOR_CANCELLED_APPOINTMENT', 'DOCTOR_CANCELLED_APPOINTMENT'),
+    ('APPOINTMENT_IN_QUEUE', 'APPOINTMENT_IN_QUEUE'),
+    ('APPOINTMENT_IS_COMPLETED', 'APPOINTMENT_IS_COMPLETED'),
+    ('MESSAGE_PATIENT_SENT', 'MESSAGE_PATIENT_SENT'),
+    ('MESSAGE_DOCTOR_SENT', 'MESSAGE_DOCTOR_SENT'),
+
+)
+
+
+class Notification(models.Model):
+    notification_type = models.CharField(max_length=255, choices=NOTIFICATION_TYPES)
+    appointments = models.ForeignKey(
+        MakeAppointments,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='notificationAppointments'
+    )
+    is_seen = models.BooleanField(default=False, null=True, blank=True)
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="notificationCustomUser",
+    )
+    created_at = models.DateField(auto_now_add=True, null=True, blank=True)
+
+
+    class Meta:
+        db_table = "table_notification"
+        verbose_name = "Notification"
+        verbose_name_plural = "Notification"

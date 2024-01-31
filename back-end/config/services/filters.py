@@ -1,5 +1,7 @@
 from django.db.models import Q
 
+from authentification.models import MakeAppointments
+
 
 def filter_by_category(queryset, request):
     category = request.query_params.get("category", [])
@@ -21,4 +23,3 @@ def filter_by_last_name(queryset, request):
     if last_name:
         queryset = queryset.filter(Q(last_name__icontains=last_name))
     return queryset
-
