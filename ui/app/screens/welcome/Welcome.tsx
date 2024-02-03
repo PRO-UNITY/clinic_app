@@ -12,6 +12,13 @@ const Welcome = ({ navigation }: any) => {
       <TouchableOpacity style={styles.button} onPress={goToLogin}>
         <Text style={styles.buttonText}>Go to Register</Text>
       </TouchableOpacity>
+      <Text style={styles.orText}>Or</Text>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate('Login')}
+      >
+        <Text style={styles.buttonText}>Go to Login</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -22,6 +29,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
+    gap: 14,
     alignItems: 'center',
     padding: 20,
     backgroundColor: '#0A94FF',
@@ -31,6 +39,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#fff',
     marginBottom: 20,
+  },
+  orText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#fff',
   },
   button: {
     backgroundColor: '#fff',

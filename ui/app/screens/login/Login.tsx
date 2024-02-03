@@ -76,9 +76,9 @@ const Login = ({ navigation }: any) => {
           style={styles.input}
           value={password}
           onChangeText={setPassword}
-          secureTextEntry
           placeholder='Password'
           keyboardType='default'
+          secureTextEntry
         />
         <TouchableOpacity style={styles.button} onPress={handleLogin}>
           <Text style={styles.buttonText}>Login</Text>

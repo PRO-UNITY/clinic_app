@@ -23,25 +23,32 @@ const UserProfileEdit = ({ route, navigation }: any) => {
 
   const [firstName, setFirstName] = useState(user?.first_name || '');
   const [lastName, setLastName] = useState(user?.last_name || '');
-  const [dateOfBirth, setDateOfBirth] = useState(user?.date_of_birth || '');
+  // const [dateOfBirth, setDateOfBirth] = useState(user?.date_of_birth || '');
   const [phone, setPhone] = useState(user?.phone || '');
   const [gender, setGender] = useState(user?.gender || '');
   const [address, setAddress] = useState(user?.address || '');
   const [avatar, setAvatar] = useState(user?.avatar || '');
-  const [genderList, setGenderList] = useState([]);
+  // const [genderList, setGenderList] = useState([]);
   const [selectedGender, setSelectedGender] = useState('');
   const [isPickerVisible, setPickerVisible] = useState(false);
 
+  const [genderList, setGenderList] = useState([
+    { id: 1, name: 'Male' },
+    { id: 2, name: 'Female' },
+  ]);
+
   useEffect(() => {
     console.log(id);
+
     getUserProfile().then((res: any) => {
-      // setUser(res);
+      console.log(res);
+
       setFirstName(res.first_name);
       setLastName(res.last_name);
-      setDateOfBirth(res.date_of_birth);
+      setGender(res.gender);
+      // setDateOfBirth(res.date_of_birth);
       setPhone(res.phone);
       setSelectedGender(res.gender);
-      setGender(res.gender === 1 ? 'Male' : 'Female');
       setAddress(res.address);
       setAvatar(res.avatar);
     });
@@ -70,11 +77,13 @@ const UserProfileEdit = ({ route, navigation }: any) => {
   };
 
   const handleSave = async () => {
+    console.log(selectedGender);
+
     try {
       const formData = new FormData();
       formData.append('first_name', firstName);
       formData.append('last_name', lastName);
-      formData.append('date_of_birth', '1999-01-01');
+      // formData.append('date_of_birth', dateOfBirth);
       formData.append('phone', phone);
       formData.append('gender', selectedGender);
       formData.append('address', address);
@@ -88,8 +97,14 @@ const UserProfileEdit = ({ route, navigation }: any) => {
         // @ts-ignore
         formData.append('avatar', avatarFile);
       }
-      const updatedUser = await updateUserProfile(id, formData);
-      navigation.navigate('User', { updatedUser });
+      const updatedUser = await updateUserProfile(id, formData)
+        .then((res: any) => {
+          console.log(res);
+          navigation.navigate('User', { updatedUser });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     } catch (error) {
       console.log(error);
     }
@@ -111,14 +126,14 @@ const UserProfileEdit = ({ route, navigation }: any) => {
         onChangeText={setLastName}
       />
 
-      <Text>Date of birth:</Text>
+      {/* <Text>Date of birth:</Text>
       <TextInput
         style={styles.input}
         value={dateOfBirth}
         onChangeText={setDateOfBirth}
         placeholder='YYYY-MM-DD'
         keyboardType='numeric'
-      />
+      /> */}
       <Text>Phone:</Text>
       <TextInput style={styles.input} value={phone} onChangeText={setPhone} />
       <Text>Gender:</Text>
@@ -132,6 +147,8 @@ const UserProfileEdit = ({ route, navigation }: any) => {
         <Picker
           selectedValue={gender}
           onValueChange={(itemValue) => {
+            console.log(itemValue);
+
             setSelectedGender(itemValue);
             setGender(itemValue === '1' ? 'Male' : 'Female');
             setPickerVisible(false);

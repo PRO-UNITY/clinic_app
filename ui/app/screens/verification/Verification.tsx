@@ -31,6 +31,7 @@ const Verification: React.FC<VerificationProps> = ({ navigation }: any) => {
       .then(async (res) => {
         await AsyncStorage.setItem('token', res.access);
         navigation.navigate('TabBar');
+        // navigation.navigate('Login');
       })
       .catch((err) => {
         console.log(err);

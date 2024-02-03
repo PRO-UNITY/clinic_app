@@ -109,8 +109,8 @@ const AppointDoctor = ({ navigation, route }: any) => {
           review={doctor?.reviews}
           doctorId={doctorId}
           isFavorite={doctor?.is_saved}
-          //new
           onBookmarkPress={handleBookmarkPress}
+          content={doctor?.content}
           about={
             doctor?.about
               ? doctor?.about
@@ -134,7 +134,7 @@ const AppointDoctor = ({ navigation, route }: any) => {
               <View style={styles.pickerContainer}>
                 <TouchableOpacity
                   onPress={showDatePickerModal}
-                  style={[styles.customButton, { width: '100%' }]}
+                  style={[styles.customButton]}
                 >
                   <Text style={styles.buttonText}>Choose date</Text>
                 </TouchableOpacity>
@@ -239,6 +239,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   customButton: {
+    width: '100%',
     backgroundColor: '#054A80',
     padding: 10,
     borderRadius: 5,

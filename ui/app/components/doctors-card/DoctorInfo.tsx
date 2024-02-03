@@ -1,10 +1,18 @@
-import { Image, StyleSheet, Text, View, Platform } from 'react-native';
-import React, { useEffect } from 'react';
+import {
+  Image,
+  StyleSheet,
+  Text,
+  View,
+  Platform,
+  Pressable,
+} from 'react-native';
+import React from 'react';
 import { Doctor } from '../../types/Doctor';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { mainColor } from '../../utils/colors';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { addDoctorToSaved } from '../../services/doctor/doctor';
+import ReviewContentsModal from '../review-modal/ReviewContentsModal';
 
 const DoctorInfo: React.FC<Doctor> = ({
   avatar,
@@ -14,12 +22,10 @@ const DoctorInfo: React.FC<Doctor> = ({
   doctorId,
   isFavorite,
   onBookmarkPress,
+  content,
 }) => {
   const [isSaved, setIsSaved] = React.useState(false);
-
-  // useEffect(() => {
-  //   console.log('isFavorite', isFavorite);
-  // }, [isSaved]);
+  const [isModalVisible, setModalVisible] = React.useState(false);
 
   const handleSaveDoctor = () => {
     const data = {
@@ -29,6 +35,11 @@ const DoctorInfo: React.FC<Doctor> = ({
       setIsSaved(true);
       onBookmarkPress();
     });
+  };
+
+  const handleViewComments = () => {
+    setModalVisible(true);
+    console.log('modal visible', isModalVisible);
   };
 
   return (
@@ -43,7 +54,6 @@ const DoctorInfo: React.FC<Doctor> = ({
               onPress={() => handleSaveDoctor()}
               style={styles.infoCard}
             >
-              {/* <Text style={styles.infoCardText}>+100</Text> */}
               <Icon
                 name={isFavorite ? 'bookmark' : 'bookmark-outline'}
                 size={24}
@@ -59,10 +69,10 @@ const DoctorInfo: React.FC<Doctor> = ({
           </View>
           <View>
             <Text style={styles.infoContainerText}>Rating</Text>
-            <View style={styles.infoCard}>
+            <Pressable onPress={handleViewComments} style={styles.infoCard}>
               <Icon name='star' size={16} color='gold' />
               <Text style={styles.infoCardText}>{review}</Text>
-            </View>
+            </Pressable>
           </View>
         </View>
         <View>
@@ -70,6 +80,13 @@ const DoctorInfo: React.FC<Doctor> = ({
           <Text style={styles.about}>{about}</Text>
         </View>
       </View>
+      {isModalVisible && (
+        <ReviewContentsModal
+          contents={content}
+          isVisible={isModalVisible}
+          onClose={() => setModalVisible(false)}
+        />
+      )}
     </View>
   );
 };

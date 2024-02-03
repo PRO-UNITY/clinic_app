@@ -8,6 +8,7 @@ import {
   Platform,
   TouchableOpacity,
   FlatList,
+  Alert,
 } from 'react-native';
 import {
   blueColor,
@@ -20,6 +21,8 @@ import {
   putChatConversationById,
 } from '../../services/chat/chat';
 import { clearInputs } from '../../utils/clearInputs';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { statusAppointment } from '../../services/doctor/doctor';
 
 const Chat = ({ route }: any) => {
   const [user, setUser] = useState<any>({});
@@ -27,6 +30,7 @@ const Chat = ({ route }: any) => {
   const [inputText, setInputText] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingNextPage, setLoadingNextPage] = useState<boolean>(false); // New s
+  const [role, setRole] = useState<string>('');
   const pageRef = useRef<number>(1);
 
   useEffect(() => {
@@ -37,6 +41,10 @@ const Chat = ({ route }: any) => {
       }
     );
   }, [route.params.userId]);
+
+  useEffect(() => {
+    AsyncStorage.getItem('role').then((res) => setRole(res || ''));
+  }, []);
 
   const loadNextPage = async () => {
     if (loading || loadingNextPage) return;
@@ -76,15 +84,15 @@ const Chat = ({ route }: any) => {
   };
 
   const renderMessage = ({ item }: { item: any }) => {
-    const isSenderDoctor = item.sender_type === 'doctor';
-    const isSenderPatient = item.sender_type === 'patient';
+    const isInitiator = item.sender_type === 'initiator';
+    const isReceiver = item.sender_type === 'receiver';
 
     return (
       <View
         style={[
           styles.messageContainer,
-          isSenderDoctor ? styles.doctorMessage : styles.userMessage,
-          isSenderPatient ? styles.patientMessage : styles.userMessage,
+          isInitiator ? styles.initiatorMessage : styles.userMessage,
+          isReceiver ? styles.receiverMessage : styles.userMessage,
         ]}
       >
         <Text style={styles.messageText}>{item.text}</Text>
@@ -101,9 +109,7 @@ const Chat = ({ route }: any) => {
       keyboardVerticalOffset={Platform.OS === 'ios' ? 85 : 0}
     >
       <View style={styles.header}>
-        <Text style={styles.headerText}>
-          Chat {user.first_name ? user.first_name : user.phone}
-        </Text>
+        <Text style={styles.headerText}>Clinic app chat</Text>
       </View>
 
       <FlatList
@@ -148,12 +154,19 @@ const styles = StyleSheet.create({
     backgroundColor: '#e5e5e5',
   },
   header: {
+    flexDirection: 'row',
     height: 50,
-    backgroundColor: mainColor,
-    justifyContent: 'center',
+    backgroundColor: blueColor,
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
     alignItems: 'center',
     borderBottomWidth: 1,
-    borderBottomColor: '#006699',
+    borderBottomColor: blueColor,
+  },
+  headerButton: {
+    backgroundColor: 'white',
+    padding: 5,
+    borderRadius: 5,
   },
   headerText: {
     color: 'white',
@@ -173,11 +186,11 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
     backgroundColor: yellowColor,
   },
-  patientMessage: {
+  receiverMessage: {
     alignSelf: 'flex-start',
     backgroundColor: grayColor,
   },
-  doctorMessage: {
+  initiatorMessage: {
     alignSelf: 'flex-end',
     backgroundColor: blueColor,
   },

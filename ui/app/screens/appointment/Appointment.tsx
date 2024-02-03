@@ -7,10 +7,18 @@ import {
   cancelAppointment,
 } from '../../services/doctor/doctor';
 import DoctorAppointCard from '../../components/doctors-card/DoctorAppointCard';
-import { useIsFocused } from '@react-navigation/native';
+import { useFocusEffect, useIsFocused } from '@react-navigation/native';
+import {
+  blueColor,
+  grayColor,
+  greenColor,
+  redColor,
+  yellowColor,
+} from '../../utils/colors';
 
 const Appointment = ({ navigation, route }: any) => {
   const [doctors, setDoctors] = React.useState<any>([]);
+
   const [deletedDoctor, setDeletedDoctor] = React.useState<any>(null);
   const isFocused = useIsFocused();
 
@@ -18,8 +26,9 @@ const Appointment = ({ navigation, route }: any) => {
   useEffect(() => {
     getAppointmentDoctors().then((res: any) => {
       setDoctors(res.results);
+      console.log(res);
     });
-  }, [deletedDoctor, isFocused]);
+  }, [isFocused]);
 
   const handleCancelConfirmation = (doctorId: any) => {
     Alert.alert(
@@ -32,8 +41,15 @@ const Appointment = ({ navigation, route }: any) => {
         },
         {
           text: 'Yes',
-          onPress: () =>
-            cancelAppointment(doctorId).then(() => setDeletedDoctor(doctorId)),
+          onPress: () => {
+            cancelAppointment(doctorId)
+              .then(() => {
+                setDoctors((prevDoctors: any) =>
+                  prevDoctors.filter((doctor: any) => doctor.id !== doctorId)
+                );
+              })
+              .catch((err) => console.error('Cancellation error:', err));
+          },
         },
       ]
     );
@@ -77,6 +93,8 @@ const Appointment = ({ navigation, route }: any) => {
           status={doctor?.status ? doctor.status : 'No status'}
           navigation={navigation}
           onCancelConfirmation={handleCancelConfirmation}
+          phone={doctor.phone ? doctor.phone : '998911234567'}
+          doctorId={doctor.id}
           onRescheduleAppointment={() =>
             handleRescheduleConfirmation(doctor.id)
           }
@@ -93,17 +111,15 @@ const Appointment = ({ navigation, route }: any) => {
           icon='ellipse'
           iconColor={
             doctor.status === 'IN_PROGRESS'
-              ? '#FFC700'
-              : doctor.status === 'IN_QUEUE'
-              ? '##FFC700'
+              ? grayColor
               : doctor.status === 'CANCELLED'
-              ? '#e84118'
+              ? redColor
               : doctor.status === 'ONGOING'
-              ? '#4cd137'
-              : '#718093'
+              ? greenColor
+              : doctor.status === 'COMPLETED'
+              ? blueColor
+              : yellowColor
           }
-          phone={doctor.phone ? doctor.phone : '998911234567'}
-          doctorId={doctor.id}
         />
       ))}
     </ScrollView>

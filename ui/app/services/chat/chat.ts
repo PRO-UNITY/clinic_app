@@ -22,3 +22,8 @@ export const putChatConversationById = async (convo_id: string, data: any) => {
   const response = await api.put(`/chat/conversation/${convo_id}/`, data);
   return response.data;
 };
+
+export const getChatAppointment = async (id: number) => {
+  const response = await api.get(`/chat/appointment-message/${id}/`);
+  return response.data;
+};
