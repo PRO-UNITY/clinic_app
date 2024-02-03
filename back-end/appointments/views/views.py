@@ -10,7 +10,7 @@ from main_services.swaggers import swagger_extend_schema, swagger_schema
 from main_services.expected_fields import check_required_key
 from main_services.main import PaginationMethod
 from main_services.pagination import StandardResultsSetPagination
-from main_services.roles import custom_user_has_patient_role
+from main_services.roles import custom_user_has_patient_role, custom_user_has_client_role
 from main_services.main import UserRenderers
 from main_services.responses import (
     bad_request_response,
@@ -33,6 +33,11 @@ class MakeAppointmentsView(APIView, PaginationMethod):
     def get(self, request):
         user = request.user
         if custom_user_has_patient_role(user):
+            make_appointments = MakeAppointments.objects.filter(user=user).order_by('-id')
+            serializer = super().page(make_appointments, MakeAppointmentsPatientSerializer, request)
+            return success_response(serializer.data)
+
+        if custom_user_has_client_role(request.user):
             make_appointments = MakeAppointments.objects.filter(user=user).order_by('-id')
             serializer = super().page(make_appointments, MakeAppointmentsPatientSerializer, request)
             return success_response(serializer.data)

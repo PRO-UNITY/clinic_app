@@ -82,7 +82,7 @@ def filter_by_doctor_notification(queryset):
 
 def filter_by_patient_notification(queryset):
     queryset = queryset.filter(
-        Q(notification_type='APPOINTMENT_IS_ONGOING') |
+        Q(notification_type='APPOINTMENT_IN_QUEUE') |
         Q(notification_type='DOCTOR_CANCELLED_APPOINTMENT') |
         Q(notification_type='APPOINTMENT_IS_COMPLETED') |
         Q(notification_type='DOCTOR_CONFIRMED_APPOINTMENT') |

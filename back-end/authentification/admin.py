@@ -17,7 +17,7 @@ from authentification.models import (
 class CustomUserAdmin(ImportExportModelAdmin, UserAdmin):
     model = CustomUser
     list_display = ['email', 'phone', 'is_active', 'is_staff',]
-    search_fields = ['email', 'phone']
+    search_fields = ['email', 'phone', 'groups']
     ordering = ['email']
     fieldsets = (
         (None, {'fields': ('first_name', 'last_name', 'email', 'phone', 'password')}),

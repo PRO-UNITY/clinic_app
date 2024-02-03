@@ -206,3 +206,19 @@ class NotificationDetailsView(APIView):
         queryset.save()
         serializer = NotificationSerializer(queryset)
         return success_response(serializer.data)
+
+
+class MastersView(APIView, PaginationMethod):
+    permission_classes = [IsAuthenticated]
+    render_classes = [UserRenderers]
+    pagination_class = StandardResultsSetPagination
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['first_name', 'last_name', 'categories']
+
+    def get(self, request):
+        queryset = CustomUser.objects.prefetch_related('groups').filter(groups__name__in=['master']).order_by('id')
+        queryset = filter_by_first_name(queryset, request)
+        queryset = filter_by_last_name(queryset, request)
+        queryset = filter_by_category(queryset, request)
+        serializer = super().page(queryset, CustomUserListSerializer, request)
+        return success_response(serializer.data)

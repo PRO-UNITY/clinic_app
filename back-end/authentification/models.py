@@ -2,7 +2,7 @@ from django.conf import settings
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
-    PermissionsMixin,
+    PermissionsMixin, Group,
 )
 from django.db import models
 from django.utils import timezone
@@ -27,6 +27,7 @@ class CustomUserManager(BaseUserManager):
 class Categories(models.Model):
     name = models.CharField(max_length=255, null=True, blank=True)
     logo = models.ImageField(upload_to="logo/", null=True, blank=True)
+    groups = models.ForeignKey(Group, on_delete=models.CASCADE, null=True, blank=True, related_name="groupCategories")
 
     def __str__(self):
         return self.name

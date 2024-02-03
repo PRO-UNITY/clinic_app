@@ -59,6 +59,7 @@ urlpatterns = [
     path('gender', views.GenderView.as_view()),
     path('notification/', views.NotificationView.as_view()),
     path('notification/<int:pk>/', views.NotificationDetailsView.as_view()),
+    path('masters/', views.MastersView.as_view()),
 ]
 
 

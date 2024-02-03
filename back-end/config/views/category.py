@@ -13,6 +13,7 @@ from main_services.responses import (
     user_not_found_response,
     unauthorized_response
 )
+from main_services.roles import custom_user_has_client_role, custom_user_has_patient_role
 from main_services.swaggers import swagger_extend_schema, swagger_schema
 from main_services.expected_fields import check_required_key
 from authentification.models import Categories
@@ -26,10 +27,21 @@ from authentification.serializer.serializer import (
 class CategoryViews(APIView):
 
     def get(self, request):
-        category = Categories.objects.all().order_by('-id')
+        print(request.user.groups.all())
+        if custom_user_has_client_role(request.user):
+            category = Categories.objects.select_related('groups').filter(
+                Q(groups__name='master')
+            )
+            serializer = CategoriesSerializer(category, many=True, context={'request': request})
+            return success_response(serializer.data)
+        if custom_user_has_patient_role(request.user):
+            category = Categories.objects.select_related('groups').filter(
+                Q(groups__name='doctor')
+            )
+            serializer = CategoriesSerializer(category, many=True, context={'request': request})
+            return success_response(serializer.data)
 
-        serializer = CategoriesSerializer(category, many=True, context={'request': request})
-        return success_response(serializer.data)
+
 
     def post(self, request):
         valid_fields = {"name", "logo"}
