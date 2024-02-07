@@ -135,7 +135,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-FORCE_SCRIPT_NAME = "/clinc"
+FORCE_SCRIPT_NAME = "/clinic"
 
 if DEBUG:
     STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
