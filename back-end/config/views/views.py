@@ -45,7 +45,7 @@ class GenderView(APIView):
         return success_response(serializer.data)
 
 
-@swagger_extend_schema(fields={'name', 'address', 'phone', 'author', 'logo'}, description="Custom User Profile")
+@swagger_extend_schema(fields={'name', 'address', 'phone', 'author', 'logo', 'password'}, description="Custom User Profile")
 @swagger_schema(serializer=RegisterSerializer)
 class ProfileViews(APIView):
     permission_classes = [IsAuthenticated]

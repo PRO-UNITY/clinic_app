@@ -18,6 +18,7 @@ from main_services.responses import (
 from main_services.swaggers import swagger_extend_schema, swagger_schema
 from main_services.expected_fields import check_required_key
 from authentification.services.send_sms import send_sms
+from authentification.models import CustomUser
 
 
 @swagger_extend_schema(fields={"phone", "password"}, description="Send sms code")
@@ -46,6 +47,31 @@ class SendSmsViews(APIView):
             token = get_token_for_user(user)
             return success_created_response(token)
         return bad_request_response(serializer.errors)
+
+
+@swagger_extend_schema(fields={"phone"}, description="Send Phone")
+@swagger_schema(serializer=SendSmsCodeSerializer)
+class SendCodeToPhoneView(APIView):
+
+    def post(self, request):
+        valid_fields = {"phone"}
+        unexpected_fields = check_required_key(request, valid_fields)
+        if unexpected_fields:
+            return bad_request_response(f"Unexpected fields: {', '.join(unexpected_fields)}")
+
+        if "phone" not in request.data:
+            return bad_request_response("Phone key is missing in the request data")
+
+        phone = request.data['phone']
+        try:
+            user = CustomUser.objects.get(phone=phone)
+            code = generate_sms_code()
+            send_sms(user, code)
+            create_sms_history = SmsHistory.objects.create(user=user, code=code)
+            token = get_token_for_user(user)
+            return success_response(token)
+        except ObjectDoesNotExist:
+            return bad_request_response('User Not Found')
 
 
 @swagger_extend_schema(fields={"code"}, description="Verification sms code")

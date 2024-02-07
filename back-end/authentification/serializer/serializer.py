@@ -74,6 +74,7 @@ class CategoriesSerializer(serializers.ModelSerializer):
         if self.context.get('logo') == None:
             instance.logo = instance.logo
         instance.logo = self.context.get('logo')
+        instance.set_password(validated_data['password'])
         instance = super(CategoriesSerializer, self).update(instance, validated_data)
         instance.save()
         return instance
