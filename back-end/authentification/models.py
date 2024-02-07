@@ -80,6 +80,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     date_of_birth = models.DateField(null=True, blank=True)
     avatar = models.ImageField(upload_to="avatar/", null=True, blank=True)
     hospital = models.ForeignKey(Hospital, on_delete=models.CASCADE, null=True, blank=True)
+    experience = models.IntegerField(default=0, null=True, blank=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     date_joined = models.DateTimeField(default=timezone.now)
@@ -171,10 +172,19 @@ NOTIFICATION_TYPES = (
     ('PATIENT_SENDING_BACK_APPOINTMENT', 'PATIENT_SENDING_BACK_APPOINTMENT'),
     ('DOCTOR_CONFIRMED_APPOINTMENT', 'DOCTOR_CONFIRMED_APPOINTMENT'),
     ('DOCTOR_CANCELLED_APPOINTMENT', 'DOCTOR_CANCELLED_APPOINTMENT'),
-    ('APPOINTMENT_IN_QUEUE', 'APPOINTMENT_IN_QUEUE'),
-    ('APPOINTMENT_IS_COMPLETED', 'APPOINTMENT_IS_COMPLETED'),
     ('MESSAGE_PATIENT_SENT', 'MESSAGE_PATIENT_SENT'),
     ('MESSAGE_DOCTOR_SENT', 'MESSAGE_DOCTOR_SENT'),
+
+    ('CLIENT_SENT_APPOINTMENT', 'CLIENT_SENT_APPOINTMENT'),
+    ('CLIENT_CANCELLED_APPOINTMENT', 'CLIENT_CANCELLED_APPOINTMENT'),
+    ('CLIENT_SENDING_BACK_APPOINTMENT', 'CLIENT_SENDING_BACK_APPOINTMENT'),
+    ('MASTER_CONFIRMED_APPOINTMENT', 'MASTER_CONFIRMED_APPOINTMENT'),
+    ('MASTER_CANCELLED_APPOINTMENT', 'MASTER_CANCELLED_APPOINTMENT'),
+    ('MESSAGE_CLIENT_SENT', 'MESSAGE_CLIENT_SENT'),
+    ('MESSAGE_MASTER_SENT', 'MESSAGE_MASTER_SENT'),
+
+    ('APPOINTMENT_IN_QUEUE', 'APPOINTMENT_IN_QUEUE'),
+    ('APPOINTMENT_IS_COMPLETED', 'APPOINTMENT_IS_COMPLETED'),
 
 )
 

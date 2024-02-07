@@ -21,7 +21,7 @@ from chat.utils.serializers import (
 from main_services.pagination import StandardResultsSetPagination
 from main_services.roles import (
     custom_user_has_patient_role,
-    custom_user_has_doctor_role
+    custom_user_has_doctor_role, custom_user_has_client_role, custom_user_has_master_role
 )
 from main_services.responses import (
     success_response,
@@ -35,16 +35,30 @@ class StartConversationView(APIView, PaginationMethod):
     pagination_class = StandardResultsSetPagination
 
     def get(self, request):
-        if custom_user_has_patient_role(request.user):
+        if custom_user_has_client_role(request.user):
             queryset = Conversation.objects.select_related('initiator').filter(
                         initiator=request.user
                 )
             serializer = super().page(queryset, ConversationListSerializer, request)
             return success_response(serializer.data)
-        if custom_user_has_doctor_role(request.user):
+        if custom_user_has_master_role(request.user):
             queryset = Conversation.objects.select_related('receiver').filter(
                     receiver=request.user
                 )
+            serializer = super().page(queryset, ConversationListSerializer, request)
+            return success_response(serializer.data)
+
+        if custom_user_has_patient_role(request.user):
+            queryset = Conversation.objects.select_related('initiator').filter(
+                initiator=request.user
+            )
+            serializer = super().page(queryset, ConversationListSerializer, request)
+            return success_response(serializer.data)
+
+        if custom_user_has_doctor_role(request.user):
+            queryset = Conversation.objects.select_related('receiver').filter(
+                receiver=request.user
+            )
             serializer = super().page(queryset, ConversationListSerializer, request)
             return success_response(serializer.data)
         return success_response("No active Room")

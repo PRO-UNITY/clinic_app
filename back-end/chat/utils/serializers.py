@@ -2,9 +2,10 @@ from rest_framework import serializers
 
 from authentification.models import CustomUser, Notification, MakeAppointments
 from chat.models import Conversation, Message
+from chat.service.service import doctor_master_message_notification, patient_client_message_notification
 from main_services.roles import (
     custom_user_has_doctor_role,
-    custom_user_has_patient_role
+    custom_user_has_patient_role, custom_user_has_client_role, custom_user_has_master_role
 )
 
 class MessageSerializer(serializers.ModelSerializer):
@@ -26,17 +27,9 @@ class MessageSerializer(serializers.ModelSerializer):
         if sender:
             conversation = create_message.conversation_id
             if conversation.initiator == sender.user:
-                notification_sent = Notification.objects.create(
-                    notification_type='MESSAGE_PATIENT_SENT',
-                    appointments=conversation.appointments,
-                    user=create_message.conversation_id.receiver,
-                )
+                patient_client_message_notification(sender.user, conversation, create_message)
             elif conversation.receiver == sender.user:
-                notification_sent = Notification.objects.create(
-                    notification_type='MESSAGE_DOCTOR_SENT',
-                    appointments=conversation.appointments,
-                    user=create_message.conversation_id.initiator,
-                )
+                doctor_master_message_notification(sender.user, conversation, create_message)
         return create_message
 
 
@@ -103,14 +96,14 @@ class MessageListSerializer(serializers.ModelSerializer):
 
     def get_sender_type(self, obj):
 
-        patient = custom_user_has_patient_role(self.context.get('request').user)
-        doctor = custom_user_has_doctor_role(self.context.get('request').user)
+        patient = custom_user_has_client_role(self.context.get('request').user)
+        doctor = custom_user_has_master_role(self.context.get('request').user)
         conversation = obj.conversation_id
-
         user = obj.sender
         if user:
             if patient:
                 if conversation.initiator == user:
+
                     return 'initiator'
                 elif conversation.receiver == user:
                     return 'receiver'

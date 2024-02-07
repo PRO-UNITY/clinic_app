@@ -93,7 +93,9 @@ class CustomUserListSerializer(serializers.ModelSerializer):
         fields = [
             "id", 'first_name', 'last_name', 'phone', 'date_of_birth',
             'address', 'information', 'gender', 'categories', 'hospital',
-            'avatar', 'role', 'email', 'reviews', 'content', 'is_saved'
+            'avatar', 'role', 'email', 'reviews', 'content', 'is_saved',
+            'experience'
+
         ]
 
     def get_role(self, obj):
@@ -162,7 +164,6 @@ class SendSmsCodeSerializer(serializers.ModelSerializer):
         return create_patient
 
 
-
 class RegisterSerializer(serializers.ModelSerializer):
 
 
@@ -171,7 +172,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             'phone', 'first_name', 'last_name', 'address', 'information',
-            'gender', 'categories', 'date_of_birth', 'avatar'
+            'gender', 'categories', 'date_of_birth', 'avatar', 'experience'
         ]
 
     def create(self, validated_data):

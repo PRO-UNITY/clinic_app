@@ -30,12 +30,12 @@ from config.serializer.serializer import (
 )
 from main_services.roles import (
     custom_user_has_patient_role,
-    custom_user_has_doctor_role
+    custom_user_has_doctor_role, custom_user_has_master_role, custom_user_has_client_role
 )
 from chat.utils.serializers import NotificationSerializer
 from appointments.services.services import (
     filter_by_patient_notification,
-    filter_by_doctor_notification
+    filter_by_doctor_notification, filter_by_master_notification, filter_by_client_notification,
 )
 
 class GenderView(APIView):
@@ -179,16 +179,26 @@ class NotificationView(APIView, PaginationMethod):
     pagination_class = StandardResultsSetPagination
 
     def get(self, request):
+        if custom_user_has_master_role(request.user):
+            notification = Notification.objects.select_related('appointments').filter(appointments__doctor=request.user, is_seen=False)
+            notification = filter_by_master_notification(notification)
+            serializer = super().page(notification, NotificationSerializer, request)
+            return success_response(serializer.data)
+
+        if custom_user_has_client_role(request.user):
+            notification = Notification.objects.select_related('appointments').filter(appointments__user=request.user, is_seen=False)
+            notification = filter_by_client_notification(notification)
+            serializer = super().page(notification, NotificationSerializer, request)
+            return success_response(serializer.data)
+
         if custom_user_has_doctor_role(request.user):
-            notification = Notification.objects.select_related('appointments').filter(
-                appointments__doctor=request.user, is_seen=False
-            )
+            notification = Notification.objects.select_related('appointments').filter(appointments__doctor=request.user, is_seen=False)
             notification = filter_by_doctor_notification(notification)
             serializer = super().page(notification, NotificationSerializer, request)
             return success_response(serializer.data)
+
         if custom_user_has_patient_role(request.user):
-            notification = Notification.objects.select_related('appointments').filter(appointments__user=request.user, is_seen=False
-            )
+            notification = Notification.objects.select_related('appointments').filter(appointments__user=request.user, is_seen=False)
             notification = filter_by_patient_notification(notification)
             serializer = super().page(notification, NotificationSerializer, request)
             return success_response(serializer.data)

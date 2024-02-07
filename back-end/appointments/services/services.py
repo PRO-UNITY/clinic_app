@@ -3,30 +3,31 @@ from django.db.models.functions import ExtractHour, ExtractMinute
 from django.utils.dateparse import parse_date, parse_time
 from authentification.models import Notification, MakeAppointments
 from chat.models import Conversation
+from main_services.roles import custom_user_has_doctor_role, custom_user_has_master_role, custom_user_has_client_role, \
+    custom_user_has_patient_role
 
 
-def create_conversation(appointment):
+def create_conversation(appointment, request):
     initiator = appointment.user
     receiver = appointment.doctor
 
     conversation = Conversation.objects.filter(initiator=initiator, receiver=receiver, appointments=appointment)
     if not conversation:
         conversation = Conversation.objects.create(initiator=initiator, receiver=receiver, appointments=appointment)
-        notification_sent = Notification.objects.create(
-            notification_type='DOCTOR_CONFIRMED_APPOINTMENT',
-            appointments=appointment,
-            user=receiver,
-        )
+        send_notification(receiver, appointment, request)
     else:
         conversation = conversation.first()
         conversation.is_activate = True
         conversation.save()
-        notification_sent = Notification.objects.create(
-            notification_type='DOCTOR_CONFIRMED_APPOINTMENT',
-            appointments=appointment,
-            user=receiver,
-        )
+        send_notification(receiver, appointment, request)
     return conversation
+
+
+def send_notification(user, make_appointments, request):
+    if custom_user_has_doctor_role(user):
+        return create_notification('DOCTOR_CONFIRMED_APPOINTMENT', make_appointments, request)
+    if custom_user_has_master_role(user):
+        return create_notification('MASTER_CONFIRMED_APPOINTMENT', make_appointments, request)
 
 
 def complete_conversation(appointment):
@@ -53,12 +54,12 @@ def filter_by_status_id(queryset, request):
     if status_id == 1:
         queryset.status = 'CANCELLED'
         queryset.save()
-        create_notification('DOCTOR_CANCELLED_APPOINTMENT', queryset, request)
+        canceled_appointment(request.user, queryset, request)
         return queryset
     elif status_id == 2:
         queryset.status = 'IN_QUEUE'
         queryset.save()
-        create_conversation(queryset)
+        create_conversation(queryset, request)
         create_notification('APPOINTMENT_IN_QUEUE', queryset, request)
         return queryset
     elif status_id == 3:
@@ -68,6 +69,13 @@ def filter_by_status_id(queryset, request):
         create_notification('APPOINTMENT_IS_COMPLETED', queryset, request)
         return queryset
     return None
+
+
+def canceled_appointment(user, make_appointments, request):
+    if custom_user_has_doctor_role(user):
+        return create_notification('DOCTOR_CANCELLED_APPOINTMENT', make_appointments, request)
+    if custom_user_has_master_role(user):
+        return create_notification('MASTER_CANCELLED_APPOINTMENT', make_appointments, request)
 
 
 def filter_by_doctor_notification(queryset):
@@ -80,6 +88,16 @@ def filter_by_doctor_notification(queryset):
     return queryset
 
 
+def filter_by_master_notification(queryset):
+    queryset = queryset.filter(
+        Q(notification_type='CLIENT_SENT_APPOINTMENT') |
+        Q(notification_type='CLIENT_CANCELLED_APPOINTMENT') |
+        Q(notification_type='CLIENT_SENDING_BACK_APPOINTMENT') |
+        Q(notification_type='MESSAGE_CLIENT_SENT')
+    ).order_by("-id")
+    return queryset
+
+
 def filter_by_patient_notification(queryset):
     queryset = queryset.filter(
         Q(notification_type='APPOINTMENT_IN_QUEUE') |
@@ -87,6 +105,17 @@ def filter_by_patient_notification(queryset):
         Q(notification_type='APPOINTMENT_IS_COMPLETED') |
         Q(notification_type='DOCTOR_CONFIRMED_APPOINTMENT') |
         Q(notification_type='MESSAGE_DOCTOR_SENT')
+    ).order_by("-id")
+    return queryset
+
+
+def filter_by_client_notification(queryset):
+    queryset = queryset.filter(
+        Q(notification_type='APPOINTMENT_IN_QUEUE') |
+        Q(notification_type='MASTER_CANCELLED_APPOINTMENT') |
+        Q(notification_type='APPOINTMENT_IS_COMPLETED') |
+        Q(notification_type='MASTER_CONFIRMED_APPOINTMENT') |
+        Q(notification_type='MESSAGE_MASTER_SENT')
     ).order_by("-id")
     return queryset
 
@@ -108,6 +137,7 @@ def filter_by_time(queryset, request):
                 minute=ExtractMinute('timestamp')
             ).filter(hour=parsed_time.hour, minute=parsed_time.minute)
     return queryset
+
 
 def doctor_busy_days(request):
     user = request.user

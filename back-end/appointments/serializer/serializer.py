@@ -5,8 +5,7 @@ from authentification.models import (
     MakeAppointments, Notification
 )
 from appointments.services.services import create_notification
-
-
+from main_services.roles import custom_user_has_patient_role, custom_user_has_client_role
 
 
 class MakeAppointmentsSerializer(serializers.ModelSerializer):
@@ -45,8 +44,15 @@ class MakeAppointmentsSerializer(serializers.ModelSerializer):
 
         make_appointments = MakeAppointments.objects.create(doctor=doctor, user=user, timestamp=timestamp,
                                                             **validated_data)
-        create_notification('PATIENT_SENT_APPOINTMENT', make_appointments, self.context['request'])
+
+        self.send_notification(user, make_appointments, self.context.get('request'))
         return make_appointments
+
+    def send_notification(self, user, make_appointments, request):
+        if custom_user_has_patient_role(user):
+            return create_notification('PATIENT_SENT_APPOINTMENT', make_appointments, request)
+        if custom_user_has_client_role(user):
+            return create_notification('CLIENT_SENT_APPOINTMENT', make_appointments, request)
 
 
     def update(self, instance, validated_data):
@@ -107,5 +113,3 @@ class MakeAppointmentsPatientSerializer(serializers.ModelSerializer):
                 representation['doctor']['avatar'] = request.build_absolute_uri('/media/'+logo_path)
 
         return representation
-
-

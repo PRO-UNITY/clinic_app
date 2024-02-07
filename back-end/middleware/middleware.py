@@ -36,9 +36,6 @@ class Custom404Middleware:
         return JsonResponse(data, status=status.HTTP_404_NOT_FOUND)
 
 
-def unauthorized_response():
-    return JsonResponse({'error': 'User is not authentication'}, status=401)
-
 class SimpleJWTAuthenticationMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
@@ -52,6 +49,6 @@ class SimpleJWTAuthenticationMiddleware:
             request.user = jwt_auth.get_user(validated_token)
         except Exception as e:
 
-            return unauthorized_response()
+            return JsonResponse({'error': 'User is not authentication'}, status=401)
 
         return self.get_response(request)
