@@ -63,12 +63,12 @@ class ConversationListSerializer(serializers.ModelSerializer):
         if 'initiator' in representation and 'avatar' in representation['initiator']:
             logo_path = representation['initiator']['avatar']
             if logo_path and request:
-                representation['initiator']['avatar'] = request.build_absolute_uri('/media/'+logo_path)
+                representation['initiator']['avatar'] = request.build_absolute_uri('/clinic/media/'+logo_path)
 
         if 'receiver' in representation and 'avatar' in representation['receiver']:
             logo_path = representation['receiver']['avatar']
             if logo_path and request:
-                representation['receiver']['avatar'] = request.build_absolute_uri('/media/'+logo_path)
+                representation['receiver']['avatar'] = request.build_absolute_uri('/clinic/media/'+logo_path)
 
         return representation
 
@@ -140,12 +140,12 @@ class ConversationSerializer(serializers.ModelSerializer):
         if 'initiator' in representation and 'avatar' in representation['initiator']:
             logo_path = representation['initiator']['avatar']
             if logo_path and request:
-                representation['initiator']['avatar'] = request.build_absolute_uri('/media/'+logo_path)
+                representation['initiator']['avatar'] = request.build_absolute_uri('/clinic/media/'+logo_path)
 
         if 'receiver' in representation and 'avatar' in representation['receiver']:
             logo_path = representation['receiver']['avatar']
             if logo_path and request:
-                representation['receiver']['avatar'] = request.build_absolute_uri('/media/'+logo_path)
+                representation['receiver']['avatar'] = request.build_absolute_uri('/clinic/media/'+logo_path)
 
         return representation
 
@@ -178,7 +178,7 @@ class NotificationSerializer(serializers.ModelSerializer):
         if 'user' in representation and 'avatar' in representation['user']:
             logo_path = representation['user']['avatar']
             if logo_path and request:
-                representation['user']['avatar'] = request.build_absolute_uri('/media/'+logo_path)
+                representation['user']['avatar'] = request.build_absolute_uri('/clinic/media/'+logo_path)
 
         return representation
 
