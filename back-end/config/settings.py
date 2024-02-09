@@ -144,8 +144,8 @@ else:
 
 STATIC_ROOT = os.path.join(BASE_DIR, "static_cdn")
 
-STATIC_URL = f"{FORCE_SCRIPT_NAME}/static/"
-MEDIA_URL = f"{FORCE_SCRIPT_NAME}/media/"
+STATIC_URL = f"/static/"
+MEDIA_URL = f"/media/"
 
 # STATIC_URL = "static/"
 # MEDIA_URL = "/media/"
