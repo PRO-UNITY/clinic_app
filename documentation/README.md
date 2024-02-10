@@ -4,14 +4,13 @@ Patients can choose a doctor from categories and apply for an appointment, makin
 
 Our clinic app is a reliable and efficient way to manage your healthcare needs. With features like appointment scheduling, doctor availability calendars, and categories for doctors, our app is the perfect tool for patients looking for a convenient way to manage their healthcare. Download our app today and experience the convenience of managing your healthcare needs at your fingertips!
 
-<b>Features</b>
+**Features**
 
 - **Appointment scheduling**: Patients can easily schedule appointments with their preferred doctors.
 - **Doctor availability calendar**: Patients can see when their preferred doctor is available and plan their appointments accordingly.
 - **Categories for doctors**: Patients can choose a doctor from categories, making it easy to find a doctor that suits their needs.
 
-<b>Technologies</b>
+**Technologies**
 
 - **React Native**: A JavaScript framework for building native mobile apps.
 - **Django**: A high-level Python web framework that encourages rapid development and clean, pragmatic design.
-
