@@ -85,3 +85,7 @@ class CategoryDetailViews(APIView):
         category = get_object_or_404(Categories, pk=pk)
         category.delete()
         return success_response("Deleted")
+
+
+
+
