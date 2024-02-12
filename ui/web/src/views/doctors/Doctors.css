@@ -1,18 +1,23 @@
-.img-box {
+.profile-card {
+  background-color: #f8f9fa;
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.profile-card img {
   width: 150px;
   height: 150px;
   border-radius: 50%;
-}
-.img-box img {
-  width: 100%;
-  height: 100%;
+  border: 5px solid #fff;
+  margin: 0 auto;
+  display: block;
   object-fit: cover;
-  border-radius: 50%;
 }
-.profile-card {
-  max-width: 1000px;
-  margin: 50px auto;
+
+.content-l {
+  width: 150px;
 }
-.profile-card .content-l {
-  width: 130px;
+.content-l h4,
+.content-r h5 {
+  margin-bottom: 0;
 }

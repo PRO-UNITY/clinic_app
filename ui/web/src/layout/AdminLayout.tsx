@@ -1,19 +1,17 @@
 /* eslint-disable react/prop-types */
-import AdminNavbar from '../components/admin-navbar/AdminNavbar';
-import AdminSidebar from '../components/admin-sidebar/AdminSidebar';
+import { Navigate } from "react-router-dom";
+import AdminSidebar from "../components/admin-sidebar/AdminSidebar";
 
 const AdminLayout = ({ children }: any) => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    return <Navigate to="/login" />;
+  }
   return (
-    <div className='d-flex hrms-dash vh-100 w-100'>
+    <div className="d-flex hrms-dash vh-100 w-100">
       <AdminSidebar />
-      <div className='w-100'>
-        <AdminNavbar />
-        <div
-          style={{ overflow: 'scroll', height: '85vh' }}
-          className='px-md-3 '
-        >
-          {children}
-        </div>
+      <div className="w-100">
+        <div className="px-md-3">{children}</div>
       </div>
     </div>
   );

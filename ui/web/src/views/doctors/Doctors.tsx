@@ -1,9 +1,10 @@
+import React, { useState, useEffect } from "react";
 import { Link, Outlet, useOutlet } from "react-router-dom";
 import AdminLayout from "../../layout/AdminLayout";
 import { Table } from "react-bootstrap";
-import { useEffect, useState } from "react";
-import ConfirmationModal from "../../components/confirmation-modal/ConfirmationModal";
 import { GetDoctors } from "../../services";
+import ConfirmationModal from "../../components/confirmation-modal/ConfirmationModal";
+import ReactPaginate from "react-paginate";
 import "./Doctors.css";
 
 export interface Doctordata {
@@ -36,33 +37,33 @@ interface DoctorsResponse {
 const Doctors = () => {
   const outlet = useOutlet();
   const [doctorsData, setDoctorsData] = useState<Doctordata[]>([]);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
 
   useEffect(() => {
-    GetDoctors().then((res: DoctorsResponse) => setDoctorsData(res.results));
-  }, []);
+    fetchDoctors(currentPage);
+  }, [currentPage, location.pathname]);
+
+  const fetchDoctors = (page: number) => {
+    GetDoctors(page).then((res: DoctorsResponse) => {
+      setDoctorsData(res.results);
+      setTotalPages(Math.ceil(res.count / 10)); // Assuming 10 items per page
+    });
+  };
+
+  const handlePageChange = (selectedPage: { selected: number }) => {
+    setCurrentPage(selectedPage.selected + 1);
+  };
 
   return (
     <AdminLayout>
       {outlet ? (
         <Outlet />
       ) : (
-        <div className="mt-3 pt-4">
-          <Link to={"/admin/doctors/add"}>
-            <button className="btn btn-primary">Add Doctor</button>
-          </Link>
+        <div className="pt-3">
+          <h3 className="mt-2 pt-1">Doctors</h3>
           <Table className="mt-4" striped bordered hover>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Name</th>
-                <th>Speciality</th>
-                <th>Phone</th>
-                <th>Email</th>
-                <th align="right" className="text-end">
-                  Actions
-                </th>
-              </tr>
-            </thead>
+            {/* Table Headers */}
             <tbody>
               {doctorsData.map((doctor, index) => (
                 <tr key={doctor?.id}>
@@ -73,11 +74,8 @@ const Doctors = () => {
                   <td>{doctor?.email}</td>
                   <td align="right" style={{ width: "20%" }}>
                     <div>
-                      <Link to={`view/${doctor.id}`}>
+                      <Link to={`${doctor.id}`}>
                         <button className="btn btn-secondary mx-1">View</button>
-                      </Link>
-                      <Link to={"/admin/doctors/edit"}>
-                        <button className="btn btn-warning mx-1">Edit</button>
                       </Link>
                       <ConfirmationModal
                         id={doctor?.id}
@@ -90,6 +88,29 @@ const Doctors = () => {
               ))}
             </tbody>
           </Table>
+          {/* Pagination */}
+          <div className="d-flex justify-content-end">
+            <ReactPaginate
+              activeClassName={"item active "}
+              breakClassName={"item break-me "}
+              breakLabel={"..."}
+              containerClassName={"pagination"}
+              disabledClassName={"disabled-page"}
+              marginPagesDisplayed={2}
+              nextClassName={`item next ${
+                currentPage === totalPages ? "disabled" : ""
+              }`}
+              pageClassName={"item pagination-page"}
+              previousClassName={`item previous ${
+                currentPage === 1 ? "disabled" : ""
+              }`}
+              nextLabel="Next"
+              onPageChange={handlePageChange}
+              pageRangeDisplayed={5}
+              pageCount={totalPages}
+              previousLabel="Previous"
+            />
+          </div>
         </div>
       )}
     </AdminLayout>

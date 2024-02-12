@@ -24,7 +24,8 @@ api.interceptors.response.use(
   },
   async (error) => {
     if (error.response && error.response.status === 401) {
-      console.log("log out");
+      localStorage.removeItem("token");
+      location.pathname = "/login";
     }
     return Promise.reject(error);
   }

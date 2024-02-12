@@ -30,14 +30,12 @@ const Login = () => {
     setLoading(true);
     SignInUser(signInData)
       .then(async (res) => {
-        navigate("/admin/doctors");
+        navigate("/doctors");
         localStorage.setItem("token", res.access);
       })
       .catch(() => setError(true))
       .finally(() => setLoading(false));
   };
-  // 9989912345678
-  // 1
   return (
     <section className="auth hrms-dash w-100 vh-100">
       <main className="form-signin  h-100  w-100 d-flex justify-content-center align-items-center m-auto">

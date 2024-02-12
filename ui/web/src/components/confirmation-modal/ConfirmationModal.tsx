@@ -3,11 +3,12 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import { DeleteDoctors } from "../../services";
 import { Doctordata } from "../../views/doctors/Doctors";
+import { useNavigate } from "react-router-dom";
 
 interface ConfirmationModalProps {
   id: number;
-  setDoctorsData: any;
-  doctorsData: Doctordata[];
+  setDoctorsData?: any;
+  doctorsData?: Doctordata[];
 }
 
 const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
@@ -16,14 +17,17 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   doctorsData,
 }): ReactElement => {
   const [show, setShow] = useState(false);
-  console.log(doctorsData);
+  const navigation = useNavigate();
 
   const handleToggleModal = () => setShow((prev) => !prev);
   const handleDeleteDoctor = () => {
     const newDoctos = doctorsData.filter((item) => item.id !== id);
     DeleteDoctors(id).then((res) => {
+      if (setDoctorsData) {
+        setDoctorsData(newDoctos);
+      }
       console.log(res);
-      setDoctorsData(newDoctos);
+      navigation("/doctors");
     });
     handleToggleModal();
   };

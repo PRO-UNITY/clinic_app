@@ -1,13 +1,39 @@
 .sidebar {
   width: 260px;
-  /* min-height: 100dvh; */
   height: 100vh;
 }
-.sidebar .nav .nav-link.active {
-  background: var(--primary) !important;
+.sidebar li {
+  margin-left: 10px;
+  list-style: disc;
 }
-.sidebar .nav .nav-link.active i {
-  color: var(--secondary) !important;
+.sidebar .nav li a {
+  text-decoration: none;
+}
+.pagination .item.pagination-page {
+  border-radius: 5px;
+  border: 1px solid rgb(171, 171, 171);
+  margin: 0 5px;
+  padding: 3px 10px;
+}
+.pagination .item.previous,
+.pagination .item.next {
+  background: #0d6efd;
+  border-radius: 5px;
+  padding: 3px 10px;
+  cursor: pointer;
+}
+.pagination .item.active {
+  background: #6c757d;
+  color: #fff;
+}
+
+.pagination .item.disabled {
+  opacity: 0.8;
+  cursor: not-allowed;
+}
+.pagination .item a {
+  color: #fff;
+  text-decoration: none;
 }
 @media only screen and (max-width: 768px) {
   .sidebar {

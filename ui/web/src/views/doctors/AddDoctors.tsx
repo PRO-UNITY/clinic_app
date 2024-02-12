@@ -1,18 +1,27 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Form, Button, Card, Row, Col } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import { AddDoctors, GetCategories } from "../../services";
+export interface Category {
+  id: number;
+  name: string;
+}
 
 const AddDoctor = () => {
+  const [category, setCategory] = useState<Category[]>([]);
   const [doctorData, setDoctorData] = useState({
-    name: "",
-    speciality: "",
+    categories: "",
     phone: "",
-    password: "",
     last_name: "",
     first_name: "",
+    groups: 2,
+    is_staff: true,
   });
   const navigate = useNavigate();
 
+  useEffect(() => {
+    GetCategories().then((res) => setCategory(res));
+  }, []);
   const handleInputChange = (e: any) => {
     const { name, value } = e.target;
     setDoctorData((prevData) => ({
@@ -21,10 +30,9 @@ const AddDoctor = () => {
     }));
   };
 
-  const handleAddDoctor = () => {
-    // onAddDoctor(doctorData);
-
-    navigate("/admin/doctors");
+  const handleAddDoctor = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    AddDoctors(doctorData).then(() => navigate("/doctors"));
   };
 
   return (
@@ -33,63 +41,59 @@ const AddDoctor = () => {
         <Card>
           <Card.Header as="h5">Add Doctor</Card.Header>
           <Card.Body>
-            <Form>
-              <Form.Group controlId="formName">
-                <Form.Label>Name</Form.Label>
+            <Form onSubmit={(e) => handleAddDoctor(e)}>
+              <Form.Group controlId="formFirstName">
+                <Form.Label>First Name</Form.Label>
                 <Form.Control
                   type="text"
-                  placeholder="Enter doctor's name"
-                  name="name"
-                  value={doctorData.name}
+                  placeholder="Enter first name"
+                  name="first_name"
+                  value={doctorData.first_name}
                   onChange={handleInputChange}
                 />
               </Form.Group>
 
-              <Form.Group controlId="formSpeciality">
-                <Form.Label>Speciality</Form.Label>
+              <Form.Group controlId="formLastName">
+                <Form.Label>Last Name</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Enter last name"
+                  name="last_name"
+                  value={doctorData.last_name}
+                  onChange={handleInputChange}
+                />
+              </Form.Group>
+              <Form.Group controlId="formcategories">
+                <Form.Label>categories</Form.Label>
                 <Form.Control
                   as="select"
-                  name="speciality"
-                  value={doctorData.speciality}
+                  name="categories"
+                  value={doctorData.categories}
                   onChange={handleInputChange}
                 >
                   <option value="" disabled>
-                    Select speciality
+                    Select categories
                   </option>
-                  <option value="Cardiologist">Cardiologist</option>
-                  <option value="Dermatologist">Dermatologist</option>
-                  <option value="Dermatologist">Gastroenterologist</option>
-                  <option value="Dermatologist">Gastroenterologist</option>
-                  <option value="Orthopedic Surgeon">
-                    Obstetricians and Gynecologists
-                  </option>
-                  <option value="Orthopedic Surgeon">Pediatrician</option>
-                  <option value="Orthopedic Surgeon">Neurologist</option>
-                  <option value="Orthopedic Surgeon">Endocrinologist</option>
-                  <option value="Orthopedic Surgeon">Physicians</option>
-                  <option value="Orthopedic Surgeon">Psychiatrist</option>
-                  <option value="Orthopedic Surgeon">Nephrologist</option>
-                  <option value="Orthopedic Surgeon">Ophthalmology</option>
-                  <option value="Orthopedic Surgeon">Anesthesiology</option>
-                  <option value="Orthopedic Surgeon">Oncologist</option>
-                  <option value="Orthopedic Surgeon">Emergency Medicine</option>
-                  <option value="Orthopedic Surgeon">Epidemiologist</option>
-                  <option value="Orthopedic Surgeon">Geriatrician</option>
-                  <option value="Orthopedic Surgeon">Internist</option>
-                  <option value="Orthopedic Surgeon">Hematologist</option>
-                  <option value="Orthopedic Surgeon">Allergist</option>
-                  <option value="Orthopedic Surgeon">Otolaryngologist</option>
-                  <option value="Orthopedic Surgeon">Pathology</option>
-                  <option value="Orthopedic Surgeon">Surgeon</option>
-                  <option value="Orthopedic Surgeon">Urology</option>
+                  {category.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.name}
+                    </option>
+                  ))}
                 </Form.Control>
               </Form.Group>
 
-              <Button
-                className="mt-3"
-                variant="primary"
-                onClick={handleAddDoctor}
-              >
+              <Form.Group controlId="formPhone">
+                <Form.Label>Phone</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Enter phone number"
+                  name="phone"
+                  value={doctorData.phone}
+                  onChange={handleInputChange}
+                />
+              </Form.Group>
+
+              <Button type="submit" className="mt-3" variant="primary">
                 Add Doctor
               </Button>
             </Form>
