@@ -115,7 +115,7 @@ class VerificationSmsCodeView(APIView):
         user.save()
 
 
-@swagger_extend_schema(fields={'phone', 'first_name', 'last_name', 'address', 'information', 'gender', 'categories', 'date_of_birth', 'avatar', 'password'}, description="Register")
+@swagger_extend_schema(fields={'phone', 'first_name', "groups", 'is_staff', 'last_name', 'address', 'information', 'gender', 'categories', 'date_of_birth', 'avatar', 'password'}, description="Register")
 @swagger_schema(serializer=RegisterSerializer)
 class RegisterCustomUserViews(APIView):
     permission_classes = [IsAuthenticated]
@@ -125,7 +125,7 @@ class RegisterCustomUserViews(APIView):
         if not request.user.is_authenticated:
             return unauthorized_response("Token is not valid")
 
-        valid_fields = {'phone', 'first_name', 'last_name', 'address', 'information', 'gender', 'categories', 'date_of_birth', 'avatar', 'password'}
+        valid_fields = {'phone', 'first_name', 'last_name', 'address', 'information', "groups", 'is_staff', 'gender', 'categories', 'date_of_birth', 'avatar', 'password'}
         unexpected_fields = check_required_key(request, valid_fields)
         if unexpected_fields:
             return bad_request_response(f"Unexpected fields: {', '.join(unexpected_fields)}")
