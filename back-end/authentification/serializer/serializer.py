@@ -173,7 +173,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             'phone', 'first_name', 'last_name', 'address', 'information',
-            'gender', 'categories', 'date_of_birth', 'avatar', 'experience'
+            'gender', 'categories', 'date_of_birth', 'avatar', 'experience', "is_staff"
         ]
 
     def create(self, validated_data):
