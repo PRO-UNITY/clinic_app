@@ -63,11 +63,11 @@ class SavedDoctorsDetailSerializer(serializers.ModelSerializer):
         if 'user' in representation and 'avatar' in representation['user']:
             logo_path = representation['user']['avatar']
             if logo_path and request:
-                representation['user']['avatar'] = request.build_absolute_uri('/media/'+logo_path)
+                representation['user']['avatar'] = request.build_absolute_uri('/clinic/media/'+logo_path)
 
         if 'doctor' in representation and 'avatar' in representation['doctor']:
             logo_path = representation['doctor']['avatar']
             if logo_path and request:
-                representation['doctor']['avatar'] = request.build_absolute_uri('/media/'+logo_path)
+                representation['doctor']['avatar'] = request.build_absolute_uri('/clinic/media/'+logo_path)
 
         return representation

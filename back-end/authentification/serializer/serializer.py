@@ -166,24 +166,30 @@ class SendSmsCodeSerializer(serializers.ModelSerializer):
 
 
 class RegisterSerializer(serializers.ModelSerializer):
-
+    groups = serializers.IntegerField(required=True)
 
     class Meta:
         model = CustomUser
         fields = [
             "id",
             'phone', 'first_name', 'last_name', 'address', 'information',
-            'gender', 'categories', 'date_of_birth', 'avatar', 'experience'
+            'gender', 'categories', 'date_of_birth', 'avatar', 'experience', "groups", 'is_staff',
         ]
 
     def create(self, validated_data):
         hospital = self.context.get('request').user.hospital
+        groups = validated_data.get("groups")
         create_user = CustomUser.objects.create_user(**validated_data)
         create_user.avatar = self.context.get('avatar')
         create_user.set_password(generate_password())
         create_user.hospital = hospital
         create_user.save()
-
+        try:
+            role = Group.objects.get(id=groups)
+            create_user.groups.add(role)
+            create_user.save()
+        except ObjectDoesNotExist:
+            return serializers.ValidationError({'error': "Invalid role"})
         return create_user
 
     def update(self, instance, validated_data):
