@@ -60,9 +60,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # "middleware.middleware.SimpleJWTAuthenticationMiddleware",
-    # "middleware.middleware.JsonErrorResponseMiddleware",
-    # "middleware.middleware.Custom404Middleware"
+    "middleware.middleware.SimpleJWTAuthenticationMiddleware",
+    "middleware.middleware.JsonErrorResponseMiddleware",
+    "middleware.middleware.Custom404Middleware"
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -94,7 +94,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": "clincs",
         "USER": "postgres",
-        "PASSWORD": "0576",
+        "PASSWORD": "1",
         "HOST": "localhost",
         "PORT": 5432,
     }
@@ -136,10 +136,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 
-# FORCE_SCRIPT_NAME = "/hrms"
-
-# FORCE_SCRIPT_NAME = "/clinic"
-
+FORCE_SCRIPT_NAME = "/clinic"
 
 if DEBUG:
     STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
@@ -148,11 +145,11 @@ else:
 
 STATIC_ROOT = os.path.join(BASE_DIR, "static_cdn")
 
-# STATIC_URL = f"{FORCE_SCRIPT_NAME}/static/"
-# MEDIA_URL = f"{FORCE_SCRIPT_NAME}/media/"
+STATIC_URL = f"{FORCE_SCRIPT_NAME}/static/"
+MEDIA_URL = f"{FORCE_SCRIPT_NAME}/media/"
 
-STATIC_URL = "static/"
-MEDIA_URL = "/media/"
+# STATIC_URL = "static/"
+# MEDIA_URL = "/media/"
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 

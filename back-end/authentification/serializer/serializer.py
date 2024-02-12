@@ -177,20 +177,18 @@ class RegisterSerializer(serializers.ModelSerializer):
         ]
 
     def create(self, validated_data):
-        hospital = self.context.get('request').user.hospital
-        groups = validated_data.get("groups")
-        create_user = CustomUser.objects.create_user(**validated_data)
-        create_user.avatar = self.context.get('avatar')
-        create_user.set_password(generate_password())
-        create_user.hospital = hospital
-        create_user.save()
-        try:
-            role = Group.objects.get(id=groups)
-            create_user.groups.add(role)
-            create_user.save()
-        except ObjectDoesNotExist:
-            return serializers.ValidationError({'error': "Invalid role"})
-        return create_user
+        groups_data = validated_data.pop("groups", None)
+        user = CustomUser.objects.create_user(**validated_data)
+        user.avatar = self.context.get('avatar')
+        user.set_password(generate_password())
+        if groups_data:
+            try:
+                role = Group.objects.get(id=groups_data)
+                user.groups.add(role)
+            except ObjectDoesNotExist:
+                raise serializers.ValidationError({'groups': "Invalid group ID"})
+        user.save()
+        return user
 
     def update(self, instance, validated_data):
 
