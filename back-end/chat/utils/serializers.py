@@ -94,7 +94,7 @@ class MessageListSerializer(serializers.ModelSerializer):
 
         return representation
 
-        def get_sender_type(self, obj):
+    def get_sender_type(self, obj):
 
         client = custom_user_has_client_role(self.context.get('request').user)
         patient = custom_user_has_patient_role(self.context.get('request').user)
