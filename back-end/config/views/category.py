@@ -13,7 +13,7 @@ from main_services.responses import (
     user_not_found_response,
     unauthorized_response
 )
-from main_services.roles import custom_user_has_client_role, custom_user_has_patient_role
+from main_services.roles import custom_user_has_client_role, custom_user_has_patient_role, custom_user_has_admin_role
 from main_services.swaggers import swagger_extend_schema, swagger_schema
 from main_services.expected_fields import check_required_key
 from authentification.models import Categories
@@ -27,7 +27,6 @@ from authentification.serializer.serializer import (
 class CategoryViews(APIView):
 
     def get(self, request):
-        print(request.user.groups.all())
         if custom_user_has_client_role(request.user):
             category = Categories.objects.select_related('groups').filter(
                 Q(groups__name='master')
@@ -38,6 +37,10 @@ class CategoryViews(APIView):
             category = Categories.objects.select_related('groups').filter(
                 Q(groups__name='doctor')
             )
+            serializer = CategoriesSerializer(category, many=True, context={'request': request})
+            return success_response(serializer.data)
+        if custom_user_has_admin_role(request.user):
+            category = Categories.objects.all()
             serializer = CategoriesSerializer(category, many=True, context={'request': request})
             return success_response(serializer.data)
 
@@ -81,3 +84,7 @@ class CategoryDetailViews(APIView):
         category = get_object_or_404(Categories, pk=pk)
         category.delete()
         return success_response("Deleted")
+
+
+
+

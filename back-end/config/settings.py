@@ -61,8 +61,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "middleware.middleware.SimpleJWTAuthenticationMiddleware",
-    # "middleware.middleware.JsonErrorResponseMiddleware",
-    # "middleware.middleware.Custom404Middleware"
+    "middleware.middleware.JsonErrorResponseMiddleware",
+    "middleware.middleware.Custom404Middleware"
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -134,6 +134,7 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
+
 
 FORCE_SCRIPT_NAME = "/clinic"
 

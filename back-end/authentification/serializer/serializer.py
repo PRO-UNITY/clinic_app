@@ -166,25 +166,29 @@ class SendSmsCodeSerializer(serializers.ModelSerializer):
 
 
 class RegisterSerializer(serializers.ModelSerializer):
-
+    groups = serializers.IntegerField(required=True)
 
     class Meta:
         model = CustomUser
         fields = [
             "id",
             'phone', 'first_name', 'last_name', 'address', 'information',
-            'gender', 'categories', 'date_of_birth', 'avatar', 'experience'
+            'gender', 'categories', 'date_of_birth', 'avatar', 'experience', "groups", 'is_staff',
         ]
 
     def create(self, validated_data):
-        hospital = self.context.get('request').user.hospital
-        create_user = CustomUser.objects.create_user(**validated_data)
-        create_user.avatar = self.context.get('avatar')
-        create_user.set_password(generate_password())
-        create_user.hospital = hospital
-        create_user.save()
-
-        return create_user
+        groups_data = validated_data.pop("groups", None)
+        user = CustomUser.objects.create_user(**validated_data)
+        user.avatar = self.context.get('avatar')
+        user.set_password(generate_password())
+        if groups_data:
+            try:
+                role = Group.objects.get(id=groups_data)
+                user.groups.add(role)
+            except ObjectDoesNotExist:
+                raise serializers.ValidationError({'groups': "Invalid group ID"})
+        user.save()
+        return user
 
     def update(self, instance, validated_data):
 
