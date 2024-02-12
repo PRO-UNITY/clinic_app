@@ -28,7 +28,7 @@ class SendSmsViews(APIView):
     perrmisson_class = [IsAuthenticated]
 
     def post(self, request):
-        valid_fields = {"phone", "password", "groups"}
+        valid_fields = {"phone", "password", "groups", "is_staff"}
         unexpected_fields = check_required_key(request, valid_fields)
         if unexpected_fields:
             return bad_request_response(f"Unexpected fields: {', '.join(unexpected_fields)}")
