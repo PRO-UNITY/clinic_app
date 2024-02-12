@@ -94,20 +94,23 @@ class MessageListSerializer(serializers.ModelSerializer):
 
         return representation
 
-    def get_sender_type(self, obj):
+        def get_sender_type(self, obj):
 
-        patient = custom_user_has_client_role(self.context.get('request').user)
-        doctor = custom_user_has_master_role(self.context.get('request').user)
+        client = custom_user_has_client_role(self.context.get('request').user)
+        patient = custom_user_has_patient_role(self.context.get('request').user)
+        master = custom_user_has_master_role(self.context.get('request').user)
+        doctor = custom_user_has_doctor_role(self.context.get('request').user)
+
         conversation = obj.conversation_id
         user = obj.sender
         if user:
-            if patient:
+            if patient or client:
                 if conversation.initiator == user:
 
                     return 'initiator'
                 elif conversation.receiver == user:
                     return 'receiver'
-            if doctor:
+            if doctor or master:
                 if conversation.initiator == user:
                     return 'receiver'
                 elif conversation.receiver == user:
