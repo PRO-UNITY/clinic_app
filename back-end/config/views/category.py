@@ -27,7 +27,6 @@ from authentification.serializer.serializer import (
 class CategoryViews(APIView):
 
     def get(self, request):
-        print(request.user.groups.all())
         if custom_user_has_client_role(request.user):
             category = Categories.objects.select_related('groups').filter(
                 Q(groups__name='master')

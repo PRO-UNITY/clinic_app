@@ -27,6 +27,7 @@ openpyxl==3.1.2
 packaging==23.2
 pillow==10.2.0
 psycopg==3.1.17
+psycopg2==2.9.9
 PyJWT==2.8.0
 python-dotenv==1.0.0
 pytz==2023.3.post1
