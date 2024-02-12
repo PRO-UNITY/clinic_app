@@ -166,7 +166,7 @@ class SendSmsCodeSerializer(serializers.ModelSerializer):
 
 
 class RegisterSerializer(serializers.ModelSerializer):
-
+    groups = serializers.IntegerField(required=True)
 
     class Meta:
         model = CustomUser
