@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Card, Col, Row } from 'react-bootstrap';
+import { Card, Row, Table } from 'react-bootstrap';
 import { GetDoctorId } from '../../services';
 import { useParams } from 'react-router-dom';
 import { Doctordata } from './Doctors';
@@ -15,8 +15,24 @@ const ViewDoctor = () => {
   const [value, onChange] = useState<Value>(new Date());
   const [doctor, setDoctor] = useState<Doctordata>();
   useEffect(() => {
+    // @ts-ignore
     GetDoctorId(id).then((res) => setDoctor(res));
   }, []);
+
+  // Example data for patients and their payments
+  const patientPayments = [
+    { patientName: 'John Doe', payment: 100 },
+    { patientName: 'Jane Smith', payment: 150 },
+    // Add more patient payment data as needed
+  ];
+
+  // Calculate total payments for the doctor
+  const totalPayments = patientPayments.reduce(
+    (acc, curr) => acc + curr.payment,
+    0
+  );
+  // Calculate doctor's share (assuming 20%)
+  const doctorShare = totalPayments * 0.2;
 
   return (
     <Row className='justify-content-md-center p-4'>
@@ -56,6 +72,7 @@ const ViewDoctor = () => {
                 </div>
               </div>
               <div className='mt-4'>
+                {/* @ts-ignore */}
                 <ConfirmationModal id={id} doctorsData={[]} />
               </div>
             </div>
@@ -65,6 +82,37 @@ const ViewDoctor = () => {
               </div>
             </div>
           </div>
+        </Card>
+
+        {/* Table for patient payments */}
+        <Card className='mt-5'>
+          <Card.Body>
+            <h4 className='mb-4'>Patient Payments</h4>
+            <Table striped bordered hover>
+              <thead>
+                <tr>
+                  <th>Patient Name</th>
+                  <th>Payment ($)</th>
+                  <th>Doctor's Share ($)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {patientPayments.map((payment, index) => (
+                  <tr key={index}>
+                    <td>{payment.patientName}</td>
+                    <td>{payment.payment}</td>
+                    <td>{payment.payment * 0.2}</td>{' '}
+                    {/* Assuming 20% share for the doctor */}
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+            <div className='text-right'>
+              <strong>Total Payments: {totalPayments}</strong>
+              <br />
+              <strong>Doctor's Share (20%): {doctorShare}</strong>
+            </div>
+          </Card.Body>
         </Card>
       </>
     </Row>

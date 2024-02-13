@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, Outlet, useOutlet } from 'react-router-dom';
 import AdminLayout from '../../layout/AdminLayout';
 import { Table } from 'react-bootstrap';
