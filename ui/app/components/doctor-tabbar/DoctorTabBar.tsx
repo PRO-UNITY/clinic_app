@@ -29,7 +29,7 @@ const DoctorTabBar = ({ navigation }: any) => {
   useEffect(() => {
     getNotifications(1).then((res: any) => {
       console.log(res);
-      setNotifications(res.results);
+      setNotifications(res?.results);
     });
   }, [isFocused]);
 

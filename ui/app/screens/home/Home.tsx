@@ -1,110 +1,3 @@
-// import React, { useEffect } from 'react';
-// import { StyleSheet, Text, ScrollView } from 'react-native';
-// import { SearchBar } from 'react-native-elements';
-
-// import Banner from '../../components/banner/Banner';
-// import DoctorsCard from '../../components/doctors-card/DoctorsCard';
-// import { getDoctors, getFilteredDoctors } from '../../services/doctor/doctor';
-// import { Doctor } from '../../types/Doctor';
-
-// const Home = ({ navigation }: any) => {
-//   const [doctors, setDoctors] = React.useState<Doctor[]>([]);
-//   const [searchQuery, setSearchQuery] = React.useState<string>('');
-
-//   // get doctors
-//   useEffect(() => {
-//     getDoctors(1).then((res) => {
-//       setDoctors(res.results);
-//       console.log(res);
-//     });
-//   }, []);
-
-//   const handleSearch = (text: string) => {
-//     getFilteredDoctors(text).then((res: any) => {
-//       setDoctors(res.results);
-//       console.log(res.results);
-//     });
-//     setSearchQuery(text);
-//   };
-
-//   return (
-//     <ScrollView style={styles.container}>
-//       <SearchBar
-//         placeholder='Search Doctors...'
-//         value={searchQuery}
-//         platform='default'
-//         containerStyle={styles.searchBarContainer}
-//         inputContainerStyle={styles.searchBarInputContainer}
-//         loadingProps={{}}
-//         showLoading={false}
-//         lightTheme={false}
-//         round={false}
-//         onClear={() => {}}
-//         onFocus={() => {}}
-//         onBlur={() => {}}
-//         //@ts-ignore
-//         onChangeText={(text: any) => handleSearch(text)}
-//       />
-//       <Banner
-//         bgColor='#cbe8fe'
-//         titleColor='#054A80'
-//         titles={[
-//           'Consult with specialists,Prevent you from diseases!',
-//           'Get special 10% discount this December',
-//         ]}
-//         imageUrl='https://atlas-content-cdn.pixelsquid.com/stock-images/hospital-3yL2QM6-600.jpg'
-//       />
-//       <Text style={styles.title}>Doctors</Text>
-//       {doctors?.map((doctor: any) => (
-//         <DoctorsCard
-//           key={doctor.id} //
-//           name={doctor.first_name}
-//           rating={doctor.reviews}
-//           specialty={doctor.categories ? doctor.categories : 'Urolog'}
-//           imageUrl={
-//             doctor.avatar
-//               ? doctor.avatar
-//               : 'https://img.freepik.com/free-photo/medium-shot-smiley-man-wearing-coat_23-2148816193.jpg'
-//           }
-//           icon='star'
-//           iconColor='#FFC700'
-//           phone={doctor.phone}
-//           navigation={navigation}
-//           screen={`AppointDoctor`}
-//           doctorId={doctor.id}
-//         />
-//       ))}
-//     </ScrollView>
-//   );
-// };
-
-// export default Home;
-
-// const styles = StyleSheet.create({
-//   container: {
-//     paddingTop: 25,
-//     paddingHorizontal: 25,
-//   },
-//   title: {
-//     fontSize: 24,
-//     marginTop: 20,
-//     fontWeight: 'bold',
-//     marginBottom: 16,
-//     color: '#054A80',
-//   },
-//   // search bar
-//   searchBarContainer: {
-//     backgroundColor: 'transparent',
-//     borderBottomColor: 'transparent',
-//     borderTopColor: 'transparent',
-//     marginBottom: 16,
-//   },
-//   searchBarInputContainer: {
-//     backgroundColor: '#e0e0e0',
-//     borderRadius: 8,
-//   },
-// });
-
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, FlatList } from 'react-native';
 import { SearchBar } from 'react-native-elements';
@@ -130,11 +23,17 @@ const Home = ({ navigation }: any) => {
     if (!hasMoreData || loading) {
       return;
     }
-
     setLoading(true);
     try {
       const response = await getDoctors(currentPage);
+      console.log(response.results);
       setDoctors((prevDoctors) => [...prevDoctors, ...response.results]);
+
+      if (response.next) {
+        setPage(currentPage + 1);
+      } else {
+        setHasMoreData(false);
+      }
 
       if (response.next) {
         setPage(currentPage + 1);
@@ -207,7 +106,7 @@ const Home = ({ navigation }: any) => {
         renderItem={renderItem}
         keyExtractor={(item, index) => index.toString()}
         onEndReachedThreshold={0.1}
-        onEndReached={() => loadDoctors(page)}
+        // onEndReached={() => loadDoctors(page)}
         ListFooterComponent={
           <RenderFooter loading={loading} hasMoreData={hasMoreData} />
         }

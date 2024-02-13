@@ -63,7 +63,14 @@ const DoctorHome = ({ navigation }: any) => {
       key={item.id}
       id={item.id}
       content={item.content}
-      imageUrl={item.user.avatar}
+      imageUrl={
+        'https://cdn.vectorstock.com/i/preview-1x/29/89/unknown-person-silhouette-whit-tie-vector-3212989.jpg'
+      }
+      // imageUrl={
+      //   item.user.avatar
+      //     ? item.user.avatar
+      //     : 'https://cdn.vectorstock.com/i/preview-1x/29/89/unknown-person-silhouette-whit-tie-vector-3212989.jpg'
+      // }
       icon='ellipse'
       iconColor={
         item.status === 'ONGOING'

@@ -79,7 +79,7 @@ const ChatList = ({ navigation }: any) => {
         });
       }}
     >
-      <Image source={{ uri: item.initiator.avatar }} style={styles.avatar} />
+      <Image source={{ uri: item.receiver.avatar }} style={styles.avatar} />
       <View style={styles.userInfo}>
         <Text style={styles.userName}>
           {item.type === 'initiator'

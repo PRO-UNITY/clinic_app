@@ -12,5 +12,6 @@ export interface Doctor {
   doctorId?: any;
   isFavorite?: boolean;
   onBookmarkPress?: any;
+  navigation?: any;
   content?: [];
 }

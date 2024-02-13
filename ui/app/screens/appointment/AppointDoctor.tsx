@@ -57,36 +57,42 @@ const AppointDoctor = ({ navigation, route }: any) => {
 
   const handleNextButton = () => {
     // Format selected date
-    const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1)
-      .toString()
-      .padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
-    // Format selected time
-    const formattedTime = `${time.getHours().toString().padStart(2, '0')}:${time
-      .getMinutes()
-      .toString()
-      .padStart(2, '0')}`;
-    const data = {
-      content,
-      date: formattedDate,
-      time: formattedTime,
-      doctor: doctorId,
-    };
-    if (!content) {
-      return;
-    }
-    if (route.params?.updateSchedule) {
-      rescheduleAppointment(doctorId, data).then(() => {
-        navigation.goBack({ screen: 'Appointment' });
-      });
-    } else {
-      makeAppointment(data)
-        .then(() => {
-          navigation.goBack();
-        })
-        .catch((err) => {
-          alert(err.response.data.msg);
-        });
-    }
+    // const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1)
+    //   .toString()
+    //   .padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+    // // Format selected time
+    // const formattedTime = `${time.getHours().toString().padStart(2, '0')}:${time
+    //   .getMinutes()
+    //   .toString()
+    //   .padStart(2, '0')}`;
+    // const data = {
+    //   content,
+    //   date: formattedDate,
+    //   time: formattedTime,
+    //   doctor: doctorId,
+    // };
+    // if (!content) {
+    //   return;
+    // }
+    // if (route.params?.updateSchedule) {
+    //   rescheduleAppointment(doctorId, data).then(() => {
+    //     navigation.goBack({ screen: 'Appointment' });
+    //   });
+    // } else {
+    //   makeAppointment(data)
+    //     .then(() => {
+    //       navigation.goBack();
+    //     })
+    //     .catch((err) => {
+    //       console.log(data);
+
+    //       console.log(err);
+
+    //       // alert(err.data);
+    //       alert('Doctor is busy at this time, please choose another time');
+    //     });
+    // }
+    navigation.navigate('Payment');
   };
 
   const handleBookmarkPress = () => {
@@ -111,6 +117,7 @@ const AppointDoctor = ({ navigation, route }: any) => {
           isFavorite={doctor?.is_saved}
           onBookmarkPress={handleBookmarkPress}
           content={doctor?.content}
+          navigation={navigation}
           about={
             doctor?.about
               ? doctor?.about

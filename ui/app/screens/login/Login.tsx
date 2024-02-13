@@ -26,19 +26,30 @@ const Login = ({ navigation }: any) => {
     };
     loginUser(data)
       .then(async (res) => {
+        // navigation.navigate('TabBar');
         await AsyncStorage.setItem('token', res.access)
-          .then(() => {
+          .then(async () => {
+            // navigation.navigate('DoctorTabBar');
             getUserProfile().then(async (res) => {
-              await AsyncStorage.setItem('role', res.role).then(() => {
-                showAsyncStorage();
-                const userRole = res.role;
-                if (userRole === 'patient') {
+              await AsyncStorage.setItem('role', res.role)
+                .then(() => {
                   navigation.navigate('TabBar');
-                } else if (userRole === 'doctor') {
-                  navigation.navigate('DoctorTabBar');
-                }
-              });
+                })
+                .catch((err) => {
+                  console.log(err);
+                });
             });
+            // getUserProfile().then(async (res) => {
+            //   await AsyncStorage.setItem('role', res.role).then(() => {
+            //     showAsyncStorage();
+            //     const userRole = res.role;
+            //     if (userRole === 'patient') {
+            //       navigation.navigate('TabBar');
+            //     } else if (userRole === 'doctor') {
+            //       navigation.navigate('DoctorTabBar');
+            //     }
+            //   });
+            // });
           })
           .catch((err) => {
             console.log(err);

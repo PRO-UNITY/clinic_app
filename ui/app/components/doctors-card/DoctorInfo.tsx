@@ -23,6 +23,7 @@ const DoctorInfo: React.FC<Doctor> = ({
   isFavorite,
   onBookmarkPress,
   content,
+  navigation,
 }) => {
   const [isSaved, setIsSaved] = React.useState(false);
   const [isModalVisible, setModalVisible] = React.useState(false);
@@ -40,6 +41,7 @@ const DoctorInfo: React.FC<Doctor> = ({
   const handleViewComments = () => {
     setModalVisible(true);
     console.log('modal visible', isModalVisible);
+    // navigation.navigate('Reviews', { doctorId });
   };
 
   return (

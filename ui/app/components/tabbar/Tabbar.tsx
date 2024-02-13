@@ -11,6 +11,9 @@ import { getNotifications } from '../../services/notification/notification';
 import { redColor } from '../../utils/colors';
 const Tab = createBottomTabNavigator();
 import { useIsFocused } from '@react-navigation/native';
+import Card from '../../screens/card/Card';
+import PaymentScreen from '../../screens/card/Card';
+import PaymentForm from '../../screens/card/Card';
 
 const TabBar = ({ navigation }: any) => {
   const [notifications, setNotifications] = React.useState<any[]>([]);
@@ -20,8 +23,8 @@ const TabBar = ({ navigation }: any) => {
     { name: 'chatbox-outline', color: '#000', size: 25, screen: 'ChatList' },
     {
       name:
-        notifications.length > 0 ? 'notifications' : 'notifications-outline',
-      color: notifications.length > 0 ? redColor : '#000',
+        notifications?.length > 0 ? 'notifications' : 'notifications-outline',
+      color: notifications?.length > 0 ? redColor : '#000',
       size: 25,
       screen: 'Notification',
     },
@@ -36,7 +39,7 @@ const TabBar = ({ navigation }: any) => {
   useEffect(() => {
     getNotifications(1).then((res) => {
       console.log(res);
-      setNotifications(res.results);
+      setNotifications(res?.results);
     });
   }, [isFocused]);
 
@@ -52,6 +55,7 @@ const TabBar = ({ navigation }: any) => {
           tabBarIcon: ({ color, size }) => (
             <Icon name='home' color={color} size={size} />
           ),
+
           headerTitle: () => (
             <View style={styles.header}>
               <HeaderTitle icons={headersTitleIcons} navigation={navigation} />
@@ -81,6 +85,16 @@ const TabBar = ({ navigation }: any) => {
         name='Appointment'
         component={Appointment}
       />
+      {/* <Tab.Screen
+        options={{
+          tabBarLabel: 'Card',
+          tabBarIcon: ({ color, size }) => (
+            <Icon name='card' color={color} size={size} />
+          ),
+        }}
+        name='Card'
+        component={PaymentForm}
+      /> */}
       <Tab.Screen
         options={{
           tabBarLabel: 'User',

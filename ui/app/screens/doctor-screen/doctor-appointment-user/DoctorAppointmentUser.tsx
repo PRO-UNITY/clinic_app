@@ -72,7 +72,10 @@ const DoctorAppointmentUser = ({ navigation, route }: any) => {
           content={appointmentData.content}
           date={appointmentData.timestamp}
           time={appointmentData.timestamp}
-          imageUrl={appointmentData.user.avatar}
+          // imageUrl={appointmentData.user.avatar}
+          imageUrl={
+            'https://cdn.vectorstock.com/i/preview-1x/29/89/unknown-person-silhouette-whit-tie-vector-3212989.jpg'
+          }
           icon='ellipse'
           iconColor={
             appointmentData.status === 'ONGOING'

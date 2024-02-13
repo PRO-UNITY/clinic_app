@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { getUserProfile } from '../../services/user/user';
-import { mainColor } from '../../utils/colors';
+import { greenColor, mainColor } from '../../utils/colors';
 import ProfileListItem from '../../components/profile-list-item/ProfileListItem';
 import { BASE_URL } from '../../utils';
 import { useIsFocused } from '@react-navigation/native';
@@ -83,6 +83,12 @@ const Profile = ({ navigation, route }: any) => {
       >
         <Text style={styles.editText}>Edit Profile</Text>
       </TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => navigation.navigate('PaymentSettings', { user })}
+        style={styles.paymentSettingsButton}
+      >
+        <Text style={styles.editText}>Payment Settings</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -136,6 +142,12 @@ const styles = StyleSheet.create({
   value: {
     fontSize: 16,
     color: 'gray',
+  },
+  paymentSettingsButton: {
+    backgroundColor: greenColor,
+    padding: 10,
+    borderRadius: 5,
+    marginBottom: 20,
   },
 });
 

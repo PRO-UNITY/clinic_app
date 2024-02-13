@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
-import { Link, Outlet, useOutlet } from "react-router-dom";
-import AdminLayout from "../../layout/AdminLayout";
-import { Table } from "react-bootstrap";
-import { GetDoctors } from "../../services";
-import ConfirmationModal from "../../components/confirmation-modal/ConfirmationModal";
-import ReactPaginate from "react-paginate";
-import "./Doctors.css";
+import React, { useState, useEffect } from 'react';
+import { Link, Outlet, useOutlet } from 'react-router-dom';
+import AdminLayout from '../../layout/AdminLayout';
+import { Table } from 'react-bootstrap';
+import { GetDoctors } from '../../services';
+import ConfirmationModal from '../../components/confirmation-modal/ConfirmationModal';
+import ReactPaginate from 'react-paginate';
+import './Doctors.css';
 
 export interface Doctordata {
   id: number;
@@ -60,9 +60,9 @@ const Doctors = () => {
       {outlet ? (
         <Outlet />
       ) : (
-        <div className="pt-3">
-          <h3 className="mt-2 pt-1">Doctors</h3>
-          <Table className="mt-4" striped bordered hover>
+        <div className='pt-3'>
+          <h3 className='mt-2 pt-1'>Doctors</h3>
+          <Table className='mt-4' striped bordered hover>
             {/* Table Headers */}
             <tbody>
               {doctorsData.map((doctor, index) => (
@@ -72,10 +72,10 @@ const Doctors = () => {
                   <td>{doctor?.categories}</td>
                   <td>{doctor?.phone}</td>
                   <td>{doctor?.email}</td>
-                  <td align="right" style={{ width: "20%" }}>
+                  <td align='right' style={{ width: '20%' }}>
                     <div>
                       <Link to={`${doctor.id}`}>
-                        <button className="btn btn-secondary mx-1">View</button>
+                        <button className='btn btn-secondary mx-1'>View</button>
                       </Link>
                       <ConfirmationModal
                         id={doctor?.id}
@@ -89,26 +89,26 @@ const Doctors = () => {
             </tbody>
           </Table>
           {/* Pagination */}
-          <div className="d-flex justify-content-end">
+          <div className='d-flex justify-content-end'>
             <ReactPaginate
-              activeClassName={"item active "}
-              breakClassName={"item break-me "}
-              breakLabel={"..."}
-              containerClassName={"pagination"}
-              disabledClassName={"disabled-page"}
+              activeClassName={'item active '}
+              breakClassName={'item break-me '}
+              breakLabel={'...'}
+              containerClassName={'pagination'}
+              disabledClassName={'disabled-page'}
               marginPagesDisplayed={2}
               nextClassName={`item next ${
-                currentPage === totalPages ? "disabled" : ""
+                currentPage === totalPages ? 'disabled' : ''
               }`}
-              pageClassName={"item pagination-page"}
+              pageClassName={'item pagination-page'}
               previousClassName={`item previous ${
-                currentPage === 1 ? "disabled" : ""
+                currentPage === 1 ? 'disabled' : ''
               }`}
-              nextLabel="Next"
+              nextLabel='Next'
               onPageChange={handlePageChange}
               pageRangeDisplayed={5}
               pageCount={totalPages}
-              previousLabel="Previous"
+              previousLabel='Previous'
             />
           </div>
         </div>

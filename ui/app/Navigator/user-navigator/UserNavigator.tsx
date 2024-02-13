@@ -15,6 +15,9 @@ import Chat from '../../screens/chat/Chat';
 import ChatList from '../../screens/chat/ChatList';
 import SavedDoctors from '../../screens/doctors/SavedDoctors';
 import Notification from '../../screens/notification/Notification';
+import Reviews from '../../screens/reviews/Reviews';
+import PaymentSettings from '../../screens/payment-settings/PaymentSettings';
+import Payment from '../../screens/payment-page/Payment';
 
 const Stack = createStackNavigator();
 
@@ -31,6 +34,9 @@ const AppNavigator = () => {
       <Stack.Screen name='ChatList' component={ChatList} />
       <Stack.Screen name='SavedDoctors' component={SavedDoctors} />
       <Stack.Screen name='Notification' component={Notification} />
+      <Stack.Screen name='Reviews' component={Reviews} />
+      <Stack.Screen name='PaymentSettings' component={PaymentSettings} />
+      <Stack.Screen name='Payment' component={Payment} />
       <Stack.Screen
         name='Welcome'
         component={Welcome}
